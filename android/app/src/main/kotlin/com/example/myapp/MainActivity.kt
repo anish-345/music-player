@@ -1,5 +1,11 @@
 package com.example.myapp
 
 import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngine
+import com.ryanheise.audioservice.AudioServiceActivity
 
-class MainActivity : FlutterActivity()
+class MainActivity : AudioServiceActivity() {
+    override fun provideFlutterEngine(context: android.content.Context): FlutterEngine? {
+        return super.provideFlutterEngine(context)
+    }
+}

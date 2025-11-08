@@ -1,0 +1,165 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/music_provider.dart';
+
+class QueueScreen extends StatelessWidget {
+  const QueueScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.deepPurple.shade900, Colors.black],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              _buildAppBar(context),
+              Expanded(
+                child: Consumer<MusicProvider>(
+                  builder: (context, musicProvider, child) {
+                    final queue = musicProvider.queue;
+                    final currentIndex = musicProvider.currentIndex;
+
+                    if (queue.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.queue_music,
+                              size: 80,
+                              color: Colors.white.withValues(alpha: 0.3),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Queue is empty',
+                              style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.7),
+                                fontSize: 18,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    return ReorderableListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: queue.length,
+                      onReorder: (oldIndex, newIndex) {
+                        // Handle reordering logic here
+                      },
+                      itemBuilder: (context, index) {
+                        final song = queue[index];
+                        final isCurrentSong = index == currentIndex;
+
+                        return Container(
+                          key: ValueKey(song.id),
+                          margin: const EdgeInsets.only(bottom: 12),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: isCurrentSong
+                                  ? [
+                                      Colors.purple.shade700,
+                                      Colors.blue.shade700
+                                    ]
+                                  : [
+                                      Colors.grey.shade900,
+                                      Colors.grey.shade800
+                                    ],
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: ListTile(
+                            leading: Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.blue.shade400,
+                                    Colors.purple.shade400
+                                  ],
+                                ),
+                              ),
+                              child: Icon(
+                                isCurrentSong
+                                    ? Icons.play_arrow
+                                    : Icons.music_note,
+                                color: Colors.white,
+                              ),
+                            ),
+                            title: Text(
+                              song.title,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            subtitle: Text(
+                              song.artist,
+                              style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.7)),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            trailing: IconButton(
+                              icon:
+                                  const Icon(Icons.close, color: Colors.white),
+                              onPressed: () {
+                                musicProvider.removeFromQueue(index);
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAppBar(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => Navigator.pop(context),
+          ),
+          const SizedBox(width: 16),
+          const Text(
+            'Queue',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
