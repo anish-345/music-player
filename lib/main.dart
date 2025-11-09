@@ -49,10 +49,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
 
-    // Stop playback when app is paused, inactive, or detached
-    if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.inactive ||
-        state == AppLifecycleState.detached) {
+    // Only stop playback when app is detached (removed from memory)
+    // Allow background playback when paused or inactive
+    if (state == AppLifecycleState.detached) {
       audioHandler.stop();
     }
   }

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -115,7 +116,7 @@ class PlayerScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSongInfo(song) {
+  Widget _buildSongInfo(dynamic song) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32.0),
       child: Column(
@@ -145,14 +146,25 @@ class PlayerScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, song) {
+  Widget _buildActionButtons(BuildContext context, dynamic song) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _buildActionButton(
           icon: Icons.share,
-          onPressed: () {
-            Share.share('Now playing: ${song.title} by ${song.artist}');
+          onPressed: () async {
+            try {
+              // Share the actual audio file only
+              final file = File(song.path);
+              if (await file.exists()) {
+                await Share.shareXFiles(
+                  [XFile(song.path)],
+                  sharePositionOrigin: Rect.fromLTWH(0, 0, 10, 10),
+                );
+              }
+            } catch (e) {
+              // Silently fail if sharing fails
+            }
           },
         ),
         const SizedBox(width: 40),

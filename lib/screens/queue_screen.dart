@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/music_provider.dart';
+import '../constants/app_theme.dart';
 
 class QueueScreen extends StatelessWidget {
   const QueueScreen({super.key});
@@ -9,12 +10,8 @@ class QueueScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.deepPurple.shade900, Colors.black],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+        decoration: const BoxDecoration(
+          gradient: AppTheme.primaryGradient,
         ),
         child: SafeArea(
           child: Column(
@@ -62,45 +59,44 @@ class QueueScreen extends StatelessWidget {
                         return Container(
                           key: ValueKey(song.id),
                           margin: const EdgeInsets.only(bottom: 12),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: isCurrentSong
-                                  ? [
-                                      Colors.purple.shade700,
-                                      Colors.blue.shade700
-                                    ]
-                                  : [
-                                      Colors.grey.shade900,
-                                      Colors.grey.shade800
-                                    ],
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
+                          decoration: isCurrentSong
+                              ? BoxDecoration(
+                                  gradient: AppTheme.iconGradient,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: AppTheme.elevated3DShadow,
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.3),
+                                    width: 1.5,
+                                  ),
+                                )
+                              : AppTheme.card3DDecoration,
                           child: ListTile(
                             leading: Container(
                               width: 50,
                               height: 50,
                               decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(8),
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.blue.shade400,
-                                    Colors.purple.shade400
-                                  ],
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                  width: 1,
                                 ),
                               ),
-                              child: Icon(
-                                isCurrentSong
-                                    ? Icons.play_arrow
-                                    : Icons.music_note,
-                                color: Colors.white,
+                              padding: const EdgeInsets.all(3),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(6),
+                                child: isCurrentSong
+                                    ? const Icon(Icons.play_arrow,
+                                        color: Colors.white, size: 30)
+                                    : Image.asset(
+                                        'assets/images/muico.png',
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                          return const Icon(Icons.music_note,
+                                              color: Colors.white, size: 30);
+                                        },
+                                      ),
                               ),
                             ),
                             title: Text(

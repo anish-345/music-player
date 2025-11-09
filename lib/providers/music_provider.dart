@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import '../models/song.dart';
+import '../models/playlist.dart';
 import '../services/audio_handler.dart';
 import '../services/song_service.dart';
+import '../services/playlist_service.dart';
 
 export 'package:just_audio/just_audio.dart' show LoopMode;
 
 class MusicProvider extends ChangeNotifier {
   final MusicAudioHandler _audioHandler;
   final SongService _songService = SongService();
+  final PlaylistService _playlistService = PlaylistService();
 
   List<Song> _songs = [];
   List<Song> _filteredSongs = [];
+  List<Playlist> _playlists = [];
   bool _isLoading = false;
   String _searchQuery = '';
 
   List<Song> get songs => _searchQuery.isEmpty ? _songs : _filteredSongs;
+  List<Playlist> get playlists => _playlists;
   bool get isLoading => _isLoading;
   AudioPlayer get audioPlayer => _audioHandler.audioPlayer;
   Song? get currentSong => _audioHandler.currentSong;
@@ -53,14 +58,63 @@ class MusicProvider extends ChangeNotifier {
     notifyListeners();
 
     _songs = await _songService.fetchSongs();
+    _playlists = await _playlistService.loadPlaylists();
 
     _isLoading = false;
     notifyListeners();
   }
 
-  Future<void> playSong(Song song) async {
-    await _audioHandler.playSongFromQueue(song, newQueue: _songs);
+  Future<void> createPlaylist(String name) async {
+    await _playlistService.createPlaylist(name);
+    _playlists = await _playlistService.loadPlaylists();
     notifyListeners();
+  }
+
+  Future<void> deletePlaylist(String playlistId) async {
+    await _playlistService.deletePlaylist(playlistId);
+    _playlists = await _playlistService.loadPlaylists();
+    notifyListeners();
+  }
+
+  Future<void> addSongToPlaylist(String playlistId, String songId) async {
+    await _playlistService.addSongToPlaylist(playlistId, songId);
+    _playlists = await _playlistService.loadPlaylists();
+    notifyListeners();
+  }
+
+  Future<void> removeSongFromPlaylist(String playlistId, String songId) async {
+    await _playlistService.removeSongFromPlaylist(playlistId, songId);
+    _playlists = await _playlistService.loadPlaylists();
+    notifyListeners();
+  }
+
+  List<Song> getPlaylistSongs(String playlistId) {
+    final playlist = _playlists.firstWhere((p) => p.id == playlistId);
+    return _songs.where((song) => playlist.songIds.contains(song.id)).toList();
+  }
+
+  Future<void> playSong(Song song, {List<Song>? customQueue}) async {
+    final queue = customQueue ?? _songs;
+    await _audioHandler.playSongFromQueue(song, newQueue: queue);
+    notifyListeners();
+  }
+
+  Future<void> playPlaylist(String playlistId) async {
+    final playlistSongs = getPlaylistSongs(playlistId);
+    if (playlistSongs.isNotEmpty) {
+      await playSong(playlistSongs[0], customQueue: playlistSongs);
+    }
+  }
+
+  Future<void> shufflePlaylist(String playlistId) async {
+    final playlistSongs = getPlaylistSongs(playlistId);
+    if (playlistSongs.isNotEmpty) {
+      final shuffled = List<Song>.from(playlistSongs)..shuffle();
+      await playSong(shuffled[0], customQueue: shuffled);
+      if (!_audioHandler.isShuffled) {
+        _audioHandler.toggleShuffle();
+      }
+    }
   }
 
   Future<void> playPause() async {
@@ -114,6 +168,42 @@ class MusicProvider extends ChangeNotifier {
 
   void toggleRepeat() {
     _audioHandler.toggleRepeatMode();
+    notifyListeners();
+  }
+
+  void sortSongs(String sortBy) {
+    switch (sortBy) {
+      case 'title':
+        _songs.sort(
+            (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+        break;
+      case 'artist':
+        _songs.sort(
+            (a, b) => a.artist.toLowerCase().compareTo(b.artist.toLowerCase()));
+        break;
+      case 'date':
+        _songs.sort(
+            (a, b) => b.id.compareTo(a.id)); // Assuming id represents date
+        break;
+    }
+
+    // Also sort filtered songs if search is active
+    if (_searchQuery.isNotEmpty) {
+      switch (sortBy) {
+        case 'title':
+          _filteredSongs.sort(
+              (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+          break;
+        case 'artist':
+          _filteredSongs.sort((a, b) =>
+              a.artist.toLowerCase().compareTo(b.artist.toLowerCase()));
+          break;
+        case 'date':
+          _filteredSongs.sort((a, b) => b.id.compareTo(a.id));
+          break;
+      }
+    }
+
     notifyListeners();
   }
 

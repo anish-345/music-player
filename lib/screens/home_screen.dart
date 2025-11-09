@@ -5,6 +5,7 @@ import '../widgets/song_list_item.dart';
 import '../widgets/mini_player.dart';
 import '../services/permission_service.dart';
 import '../constants/app_theme.dart';
+import 'playlists_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   bool _isSearching = false;
+  String _sortBy = 'title'; // title, date
 
   @override
   void initState() {
@@ -37,12 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (hasPermission && mounted) {
       Provider.of<MusicProvider>(context, listen: false).loadSongs();
-    } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Storage permission is required to access music'),
-        ),
-      );
     }
   }
 
@@ -161,6 +157,96 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const Spacer(),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+              boxShadow: AppTheme.button3DShadow,
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.playlist_play,
+                  color: AppTheme.primaryTextColor),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const PlaylistsScreen()),
+                );
+              },
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+              boxShadow: AppTheme.button3DShadow,
+            ),
+            child: PopupMenuButton<String>(
+              icon: const Icon(Icons.sort, color: AppTheme.primaryTextColor),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              color: Colors.transparent,
+              elevation: 20,
+              onSelected: (value) {
+                setState(() {
+                  _sortBy = value;
+                });
+                Provider.of<MusicProvider>(context, listen: false)
+                    .sortSongs(value);
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: 'title',
+                  child: Container(
+                    decoration: AppTheme.popup3DDecoration,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    child: Row(
+                      children: [
+                        Icon(
+                          _sortBy == 'title'
+                              ? Icons.check_circle
+                              : Icons.circle_outlined,
+                          color: AppTheme.primaryTextColor,
+                        ),
+                        const SizedBox(width: 12),
+                        const Text('Sort by Title',
+                            style: TextStyle(
+                                color: AppTheme.primaryTextColor,
+                                fontWeight: FontWeight.w500)),
+                      ],
+                    ),
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'date',
+                  child: Container(
+                    decoration: AppTheme.popup3DDecoration,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    child: Row(
+                      children: [
+                        Icon(
+                          _sortBy == 'date'
+                              ? Icons.check_circle
+                              : Icons.circle_outlined,
+                          color: AppTheme.primaryTextColor,
+                        ),
+                        const SizedBox(width: 12),
+                        const Text('Sort by Date',
+                            style: TextStyle(
+                                color: AppTheme.primaryTextColor,
+                                fontWeight: FontWeight.w500)),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
           Container(
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.1),
