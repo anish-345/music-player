@@ -33,7 +33,12 @@ class MiniPlayer extends StatelessWidget {
           },
           child: Container(
             height: 70,
-            margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            margin: EdgeInsets.fromLTRB(
+              16,
+              0,
+              16,
+              16 + MediaQuery.of(context).padding.bottom,
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               gradient: AppTheme.primaryGradient,

@@ -3,9 +3,21 @@ package com.example.myapp
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import com.ryanheise.audioservice.AudioServiceActivity
+import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : AudioServiceActivity() {
-    override fun provideFlutterEngine(context: android.content.Context): FlutterEngine? {
-        return super.provideFlutterEngine(context)
+    private val CHANNEL = "com.example.myapp/background"
+
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        super.configureFlutterEngine(flutterEngine)
+        
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
+            if (call.method == "moveToBackground") {
+                moveTaskToBack(true)
+                result.success(true)
+            } else {
+                result.notImplemented()
+            }
+        }
     }
 }

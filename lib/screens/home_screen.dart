@@ -43,14 +43,25 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  static const platform = MethodChannel('com.example.myapp/background');
+
+  Future<void> _moveToBackground() async {
+    try {
+      await platform.invokeMethod('moveToBackground');
+    } catch (e) {
+      // If method channel fails, fallback to SystemNavigator
+      SystemNavigator.pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-        // Move app to background instead of closing
-        SystemNavigator.pop();
+        // Move app to background - music continues playing
+        await _moveToBackground();
       },
       child: Scaffold(
         body: Container(

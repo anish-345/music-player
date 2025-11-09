@@ -127,81 +127,21 @@ class PlaylistDetailScreen extends StatelessWidget {
         allSongs.where((song) => !playlistSongIds.contains(song.id)).toList();
 
     if (availableSongs.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('All songs are already in this playlist'),
+          duration: Duration(seconds: 2),
+        ),
+      );
       return;
     }
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        title: const Text('Add Songs to Playlist',
-            style: TextStyle(color: AppTheme.primaryTextColor)),
-        content: SizedBox(
-          width: double.maxFinite,
-          height: 400,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: availableSongs.length,
-            itemBuilder: (context, index) {
-              final song = availableSongs[index];
-              return Container(
-                margin: const EdgeInsets.only(bottom: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: ListTile(
-                  leading: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    padding: const EdgeInsets.all(2),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: Image.asset(
-                        'assets/images/muico.png',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(Icons.music_note,
-                              color: AppTheme.primaryTextColor, size: 20);
-                        },
-                      ),
-                    ),
-                  ),
-                  title: Text(song.title,
-                      style: const TextStyle(
-                          color: AppTheme.primaryTextColor, fontSize: 14),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis),
-                  subtitle: Text(song.artist,
-                      style: const TextStyle(
-                          color: AppTheme.secondaryTextColor, fontSize: 12),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.add_circle,
-                        color: AppTheme.primaryTextColor),
-                    onPressed: () {
-                      musicProvider.addSongToPlaylist(playlist.id, song.id);
-                      Navigator.pop(context);
-                    },
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close',
-                style: TextStyle(color: AppTheme.secondaryTextColor)),
-          ),
-        ],
+      builder: (context) => _MultiSelectSongsDialog(
+        availableSongs: availableSongs,
+        playlistId: playlist.id,
+        musicProvider: musicProvider,
       ),
     );
   }
@@ -314,6 +254,205 @@ class PlaylistDetailScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _MultiSelectSongsDialog extends StatefulWidget {
+  final List availableSongs;
+  final String playlistId;
+  final MusicProvider musicProvider;
+
+  const _MultiSelectSongsDialog({
+    required this.availableSongs,
+    required this.playlistId,
+    required this.musicProvider,
+  });
+
+  @override
+  State<_MultiSelectSongsDialog> createState() =>
+      _MultiSelectSongsDialogState();
+}
+
+class _MultiSelectSongsDialogState extends State<_MultiSelectSongsDialog> {
+  final Set<String> _selectedSongIds = {};
+  bool _selectAll = false;
+
+  void _toggleSelectAll() {
+    setState(() {
+      _selectAll = !_selectAll;
+      if (_selectAll) {
+        _selectedSongIds.addAll(widget.availableSongs.map((s) => s.id));
+      } else {
+        _selectedSongIds.clear();
+      }
+    });
+  }
+
+  void _toggleSong(String songId) {
+    setState(() {
+      if (_selectedSongIds.contains(songId)) {
+        _selectedSongIds.remove(songId);
+        _selectAll = false;
+      } else {
+        _selectedSongIds.add(songId);
+        if (_selectedSongIds.length == widget.availableSongs.length) {
+          _selectAll = true;
+        }
+      }
+    });
+  }
+
+  void _addSelectedSongs() {
+    for (final songId in _selectedSongIds) {
+      widget.musicProvider.addSongToPlaylist(widget.playlistId, songId);
+    }
+    Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${_selectedSongIds.length} songs added to playlist'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: AppTheme.surfaceColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      title: Row(
+        children: [
+          const Expanded(
+            child: Text('Add Songs to Playlist',
+                style: TextStyle(color: AppTheme.primaryTextColor)),
+          ),
+          TextButton.icon(
+            onPressed: _toggleSelectAll,
+            icon: Icon(
+              _selectAll ? Icons.check_box : Icons.check_box_outline_blank,
+              color: AppTheme.primaryTextColor,
+              size: 20,
+            ),
+            label: const Text(
+              'All',
+              style: TextStyle(color: AppTheme.primaryTextColor),
+            ),
+          ),
+        ],
+      ),
+      content: SizedBox(
+        width: double.maxFinite,
+        height: 400,
+        child: Column(
+          children: [
+            if (_selectedSongIds.isNotEmpty)
+              Container(
+                padding: const EdgeInsets.all(8),
+                margin: const EdgeInsets.only(bottom: 8),
+                decoration: BoxDecoration(
+                  gradient: AppTheme.iconGradient,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '${_selectedSongIds.length} song${_selectedSongIds.length == 1 ? '' : 's'} selected',
+                  style: const TextStyle(
+                    color: AppTheme.primaryTextColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            Expanded(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: widget.availableSongs.length,
+                itemBuilder: (context, index) {
+                  final song = widget.availableSongs[index];
+                  final isSelected = _selectedSongIds.contains(song.id);
+
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? Colors.white.withValues(alpha: 0.15)
+                          : Colors.white.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(8),
+                      border: isSelected
+                          ? Border.all(
+                              color: AppTheme.primaryTextColor, width: 2)
+                          : null,
+                    ),
+                    child: ListTile(
+                      leading: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        padding: const EdgeInsets.all(2),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: Image.asset(
+                            'assets/images/muico.png',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(Icons.music_note,
+                                  color: AppTheme.primaryTextColor, size: 20);
+                            },
+                          ),
+                        ),
+                      ),
+                      title: Text(song.title,
+                          style: const TextStyle(
+                              color: AppTheme.primaryTextColor, fontSize: 14),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis),
+                      subtitle: Text(song.artist,
+                          style: const TextStyle(
+                              color: AppTheme.secondaryTextColor, fontSize: 12),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis),
+                      trailing: Checkbox(
+                        value: isSelected,
+                        onChanged: (_) => _toggleSong(song.id),
+                        activeColor: AppTheme.primaryTextColor,
+                        checkColor: AppTheme.surfaceColor,
+                      ),
+                      onTap: () => _toggleSong(song.id),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel',
+              style: TextStyle(color: AppTheme.secondaryTextColor)),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            gradient: AppTheme.iconGradient,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: TextButton(
+            onPressed: _selectedSongIds.isEmpty ? null : _addSelectedSongs,
+            child: Text(
+              'Add (${_selectedSongIds.length})',
+              style: TextStyle(
+                color: _selectedSongIds.isEmpty
+                    ? AppTheme.secondaryTextColor
+                    : AppTheme.primaryTextColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

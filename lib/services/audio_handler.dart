@@ -115,18 +115,34 @@ class MusicAudioHandler extends BaseAudioHandler {
 
   @override
   Future<void> skipToNext() async {
+    if (_songQueue.isEmpty) return;
+
     if (_currentIndex < _songQueue.length - 1) {
       _currentIndex++;
-      await playSongFromQueue(_songQueue[_currentIndex]);
+    } else if (_loopMode == LoopMode.all) {
+      // When repeat queue is on and at last song, go to first song
+      _currentIndex = 0;
+    } else {
+      // At last song and repeat is off, stay at last song
+      return;
     }
+    await playSongFromQueue(_songQueue[_currentIndex]);
   }
 
   @override
   Future<void> skipToPrevious() async {
+    if (_songQueue.isEmpty) return;
+
     if (_currentIndex > 0) {
       _currentIndex--;
-      await playSongFromQueue(_songQueue[_currentIndex]);
+    } else if (_loopMode == LoopMode.all) {
+      // When repeat queue is on and at first song, go to last song
+      _currentIndex = _songQueue.length - 1;
+    } else {
+      // At first song and repeat is off, stay at first song
+      return;
     }
+    await playSongFromQueue(_songQueue[_currentIndex]);
   }
 
   @override
