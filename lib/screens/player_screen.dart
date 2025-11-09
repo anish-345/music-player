@@ -43,7 +43,7 @@ class PlayerScreen extends StatelessWidget {
                   _buildProgressBar(musicProvider),
                   const SizedBox(height: 30),
                   _buildControls(musicProvider),
-                  const SizedBox(height: 40),
+                  SizedBox(height: 40 + MediaQuery.of(context).padding.bottom),
                 ],
               );
             },

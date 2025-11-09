@@ -32,7 +32,6 @@ class MiniPlayer extends StatelessWidget {
             }
           },
           child: Container(
-            height: 70,
             decoration: BoxDecoration(
               gradient: AppTheme.primaryGradient,
               boxShadow: AppTheme.elevated3DShadow,
@@ -44,7 +43,12 @@ class MiniPlayer extends StatelessWidget {
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: EdgeInsets.only(
+                left: 16.0,
+                right: 16.0,
+                top: 10.0,
+                bottom: 10.0 + MediaQuery.of(context).padding.bottom,
+              ),
               child: Row(
                 children: [
                   Container(

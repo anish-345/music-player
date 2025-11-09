@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/music_provider.dart';
 import '../widgets/song_list_item.dart';
@@ -44,76 +45,86 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        color: AppTheme.backgroundColor,
-        child: SafeArea(
-          child: Column(
-            children: [
-              _buildAppBar(),
-              if (_isSearching) _buildSearchBar(),
-              Expanded(
-                child: Consumer<MusicProvider>(
-                  builder: (context, musicProvider, child) {
-                    if (musicProvider.isLoading) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            const SizedBox(height: 16),
-                            const Text(
-                              'Loading music...',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-
-                    if (musicProvider.songs.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.music_off,
-                              size: 80,
-                              color: Colors.white.withValues(alpha: 0.3),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              _isSearching &&
-                                      musicProvider.searchQuery.isNotEmpty
-                                  ? 'No songs found'
-                                  : 'No music files found',
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.7),
-                                fontSize: 18,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        // Move app to background instead of closing
+        SystemNavigator.pop();
+      },
+      child: Scaffold(
+        body: Container(
+          color: AppTheme.backgroundColor,
+          child: SafeArea(
+            child: Column(
+              children: [
+                _buildAppBar(),
+                if (_isSearching) _buildSearchBar(),
+                Expanded(
+                  child: Consumer<MusicProvider>(
+                    builder: (context, musicProvider, child) {
+                      if (musicProvider.isLoading) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircularProgressIndicator(
+                                color: Theme.of(context).colorScheme.primary,
                               ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
+                              const SizedBox(height: 16),
+                              const Text(
+                                'Loading music...',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
 
-                    return ListView.builder(
-                      padding: const EdgeInsets.only(bottom: 80),
-                      itemCount: musicProvider.songs.length,
-                      itemBuilder: (context, index) {
-                        return SongListItem(song: musicProvider.songs[index]);
-                      },
-                    );
-                  },
+                      if (musicProvider.songs.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.music_off,
+                                size: 80,
+                                color: Colors.white.withValues(alpha: 0.3),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                _isSearching &&
+                                        musicProvider.searchQuery.isNotEmpty
+                                    ? 'No songs found'
+                                    : 'No music files found',
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.7),
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      return ListView.builder(
+                        padding: EdgeInsets.only(
+                          bottom: 80 + MediaQuery.of(context).padding.bottom,
+                        ),
+                        itemCount: musicProvider.songs.length,
+                        itemBuilder: (context, index) {
+                          return SongListItem(song: musicProvider.songs[index]);
+                        },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
+        bottomNavigationBar: const MiniPlayer(),
       ),
-      bottomNavigationBar: const MiniPlayer(),
     );
   }
 
