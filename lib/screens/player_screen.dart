@@ -154,15 +154,14 @@ class PlayerScreen extends StatelessWidget {
           icon: Icons.share,
           onPressed: () async {
             try {
-              // Share the actual audio file with proper name
+              // Share the actual audio file with its original filename
               final file = File(song.path);
               if (await file.exists()) {
-                final fileName =
-                    song.title.replaceAll(RegExp(r'[^\w\s-]'), '') + '.mp3';
+                // Get the actual filename from the path
+                final originalFileName = song.path.split('/').last;
                 await Share.shareXFiles(
-                  [XFile(song.path, name: fileName)],
-                  text: song.title,
-                  sharePositionOrigin: Rect.fromLTWH(0, 0, 10, 10),
+                  [XFile(song.path, name: originalFileName)],
+                  text: '${song.title} - ${song.artist}',
                 );
               }
             } catch (e) {

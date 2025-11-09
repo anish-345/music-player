@@ -18,17 +18,16 @@ class MusicAudioHandler extends BaseAudioHandler {
   }
 
   void _init() {
-    _audioPlayer.playbackEventStream.listen((event) {
+    // Only update on actual state changes, not every event
+    _audioPlayer.playerStateStream.distinct().listen((state) {
       playbackState.add(playbackState.value.copyWith(
         controls: [
           MediaControl.skipToPrevious,
-          _audioPlayer.playing ? MediaControl.pause : MediaControl.play,
+          state.playing ? MediaControl.pause : MediaControl.play,
           MediaControl.skipToNext,
         ],
         systemActions: const {
           MediaAction.seek,
-          MediaAction.seekForward,
-          MediaAction.seekBackward,
         },
         androidCompactActionIndices: const [0, 1, 2],
         processingState: const {
@@ -37,19 +36,21 @@ class MusicAudioHandler extends BaseAudioHandler {
           ProcessingState.buffering: AudioProcessingState.buffering,
           ProcessingState.ready: AudioProcessingState.ready,
           ProcessingState.completed: AudioProcessingState.completed,
-        }[_audioPlayer.processingState]!,
-        playing: _audioPlayer.playing,
-        updatePosition: _audioPlayer.position,
-        bufferedPosition: _audioPlayer.bufferedPosition,
-        speed: _audioPlayer.speed,
+        }[state.processingState]!,
+        playing: state.playing,
         queueIndex: _currentIndex,
       ));
     });
 
-    _audioPlayer.positionStream.listen((position) {
-      playbackState.add(playbackState.value.copyWith(
-        updatePosition: position,
-      ));
+    // Throttle position updates to once per second to save battery
+    _audioPlayer.positionStream
+        .throttleTime(const Duration(seconds: 1))
+        .listen((position) {
+      if (playbackState.hasValue) {
+        playbackState.add(playbackState.value.copyWith(
+          updatePosition: position,
+        ));
+      }
     });
   }
 
@@ -65,33 +66,41 @@ class MusicAudioHandler extends BaseAudioHandler {
   LoopMode get loopMode => _loopMode;
 
   Future<void> playSongFromQueue(Song song, {List<Song>? newQueue}) async {
-    if (newQueue != null) {
-      _songQueue = newQueue;
-      _currentIndex = _songQueue.indexOf(song);
+    try {
+      if (newQueue != null) {
+        _songQueue = newQueue;
+        _currentIndex = _songQueue.indexOf(song);
 
-      final mediaItems = _songQueue
-          .map((s) => MediaItem(
-                id: s.id,
-                title: s.title,
-                artist: s.artist,
-                artUri: Uri.parse('asset:///assets/images/muico.png'),
-              ))
-          .toList();
+        final mediaItems = _songQueue
+            .map((s) => MediaItem(
+                  id: s.id,
+                  title: s.title,
+                  artist: s.artist,
+                  artUri: Uri.parse('asset:///assets/images/muico.png'),
+                ))
+            .toList();
 
-      _queueSubject.add(mediaItems);
+        _queueSubject.add(mediaItems);
+      }
+
+      final currentMediaItem = MediaItem(
+        id: song.id,
+        title: song.title,
+        artist: song.artist,
+        artUri: Uri.parse('asset:///assets/images/muico.png'),
+      );
+
+      mediaItem.add(currentMediaItem);
+
+      await _audioPlayer.setFilePath(song.path);
+      await _audioPlayer.play();
+    } catch (e) {
+      print('Error playing song: $e');
+      // Try to skip to next song if available
+      if (_songQueue.length > 1 && _currentIndex < _songQueue.length - 1) {
+        await skipToNext();
+      }
     }
-
-    final currentMediaItem = MediaItem(
-      id: song.id,
-      title: song.title,
-      artist: song.artist,
-      artUri: Uri.parse('asset:///assets/images/muico.png'),
-    );
-
-    mediaItem.add(currentMediaItem);
-
-    await _audioPlayer.setFilePath(song.path);
-    await _audioPlayer.play();
   }
 
   @override

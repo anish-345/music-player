@@ -29,13 +29,15 @@ void main() async {
 
   audioHandler = await AudioService.init(
     builder: () => MusicAudioHandler(),
-    config: const AudioServiceConfig(
+    config: AudioServiceConfig(
       androidNotificationChannelId: 'com.example.myapp.channel.audio',
       androidNotificationChannelName: 'Music Playback',
       androidNotificationOngoing: false,
       androidShowNotificationBadge: true,
-      androidStopForegroundOnPause: true,
+      androidStopForegroundOnPause: false,
       androidNotificationClickStartsActivity: true,
+      androidNotificationIcon: 'drawable/ic_notification',
+      notificationColor: const Color(0xFF9C27B0),
     ),
   );
 

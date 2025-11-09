@@ -31,13 +31,13 @@ class MusicProvider extends ChangeNotifier {
   LoopMode get loopMode => _audioHandler.loopMode;
 
   MusicProvider(this._audioHandler) {
-    _audioHandler.audioPlayer.playerStateStream.listen((_) {
+    // Only notify on actual state changes (playing/paused/stopped)
+    _audioHandler.audioPlayer.playerStateStream.distinct().listen((_) {
       notifyListeners();
     });
 
-    _audioHandler.audioPlayer.positionStream.listen((_) {
-      notifyListeners();
-    });
+    // Don't listen to position stream here - let widgets that need it subscribe directly
+    // This reduces unnecessary rebuilds across the entire app
   }
 
   void searchSongs(String query) {

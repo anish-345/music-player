@@ -32,108 +32,108 @@ class MiniPlayer extends StatelessWidget {
             }
           },
           child: Container(
+            height: 70,
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               gradient: AppTheme.primaryGradient,
+              borderRadius: BorderRadius.circular(20),
               boxShadow: AppTheme.elevated3DShadow,
-              border: Border(
-                top: BorderSide(
-                  color: Colors.white.withValues(alpha: 0.1),
-                  width: 1,
-                ),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.1),
+                width: 1,
               ),
             ),
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: 16.0,
-                right: 16.0,
-                top: 10.0,
-                bottom: 10.0 + MediaQuery.of(context).padding.bottom,
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(AppTheme.iconRadius),
-                      boxShadow: AppTheme.button3DShadow,
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        width: 1,
-                      ),
-                    ),
-                    padding: const EdgeInsets.all(3),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: Image.asset(
-                        'assets/images/muico.png',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(Icons.music_note,
-                              color: AppTheme.primaryTextColor, size: 30);
-                        },
-                      ),
+            child: Row(
+              children: [
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(AppTheme.iconRadius),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      width: 1,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          currentSong.title,
-                          style: const TextStyle(
-                            color: AppTheme.primaryTextColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                  padding: const EdgeInsets.all(3),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.asset(
+                      'assets/images/muico.png',
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(
+                          Icons.music_note,
+                          color: AppTheme.primaryTextColor,
+                          size: 28,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        currentSong.title,
+                        style: const TextStyle(
+                          color: AppTheme.primaryTextColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
                         ),
-                        Text(
-                          currentSong.artist,
-                          style: const TextStyle(
-                            color: AppTheme.secondaryTextColor,
-                            fontSize: 12,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
-                      boxShadow: AppTheme.button3DShadow,
-                    ),
-                    child: IconButton(
-                      icon: Icon(
-                        musicProvider.audioPlayer.playing
-                            ? Icons.pause
-                            : Icons.play_arrow,
-                        color: AppTheme.primaryTextColor,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      onPressed: () => musicProvider.playPause(),
-                    ),
+                      const SizedBox(height: 2),
+                      Text(
+                        currentSong.artist,
+                        style: const TextStyle(
+                          color: AppTheme.secondaryTextColor,
+                          fontSize: 12,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
-                      boxShadow: AppTheme.button3DShadow,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.skip_next,
-                          color: AppTheme.primaryTextColor),
-                      onPressed: () => musicProvider.playNext(),
-                    ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                    boxShadow: AppTheme.button3DShadow,
                   ),
-                ],
-              ),
+                  child: IconButton(
+                    icon: Icon(
+                      musicProvider.audioPlayer.playing
+                          ? Icons.pause
+                          : Icons.play_arrow,
+                      color: AppTheme.primaryTextColor,
+                    ),
+                    onPressed: () => musicProvider.playPause(),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                    boxShadow: AppTheme.button3DShadow,
+                  ),
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.skip_next,
+                      color: AppTheme.primaryTextColor,
+                    ),
+                    onPressed: () => musicProvider.playNext(),
+                  ),
+                ),
+              ],
             ),
           ),
         );
