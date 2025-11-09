@@ -36,8 +36,8 @@ void main() async {
       androidShowNotificationBadge: true,
       androidStopForegroundOnPause: false,
       androidNotificationClickStartsActivity: true,
-      androidNotificationIcon: 'drawable/ic_notification',
-      notificationColor: const Color(0xFF9C27B0),
+      androidNotificationIcon: 'mipmap/ic_launcher',
+      notificationColor: const Color(0xFF3D2E4F),
     ),
   );
 
