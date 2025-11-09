@@ -201,6 +201,12 @@ class MusicAudioHandler extends BaseAudioHandler {
   }
 
   @override
+  Future<void> onTaskRemoved() async {
+    // Stop playback when app is swiped away from recent apps
+    await stop();
+  }
+
+  @override
   Future<void> stop() async {
     await _audioPlayer.stop();
     await _audioPlayer.dispose();

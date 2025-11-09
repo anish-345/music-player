@@ -30,6 +30,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _initializeApp() async {
+    // Request notification permission for Android 13+
+    await PermissionService.requestNotificationPermission();
+
     final hasPermission = await PermissionService.requestStoragePermission();
 
     if (hasPermission && mounted) {
