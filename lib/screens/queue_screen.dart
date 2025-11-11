@@ -55,7 +55,7 @@ class QueueScreen extends StatelessWidget {
                       ),
                       itemCount: queue.length,
                       onReorder: (oldIndex, newIndex) {
-                        // Handle reordering logic here
+                        musicProvider.reorderQueue(oldIndex, newIndex);
                       },
                       itemBuilder: (context, index) {
                         final song = queue[index];

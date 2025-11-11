@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Shadow Layer 1 (Outer) - Larger purple glow -->
+    <item
+        android:top="3dp"
+        android:left="3dp"
+        android:right="3dp"
+        android:bottom="3dp">
+        <shape android:shape="oval">
+            <solid android:color="#663D2E4F"/>
+            <size android:width="60dp" android:height="60dp"/>
+        </shape>
+    </item>
+    
+    <!-- Shadow Layer 2 (Middle) -->
+    <item
+        android:top="2dp"
+        android:left="2dp"
+        android:right="2dp"
+        android:bottom="2dp">
+        <shape android:shape="oval">
+            <solid android:color="#803D2E4F"/>
+        </shape>
+    </item>
+    
+    <!-- Main Play Button with Gradient -->
+    <item>
+        <shape android:shape="oval">
+            <gradient
+                android:angle="135"
+                android:startColor="#6A4C93"
+                android:centerColor="#8B6BB8"
+                android:endColor="#6A4C93"
+                android:type="linear"/>
+            <stroke
+                android:width="2dp"
+                android:color="#A68BC5"/>
+        </shape>
+    </item>
+    
+    <!-- Top Highlight -->
+    <item
+        android:top="6dp"
+        android:left="12dp"
+        android:right="12dp"
+        android:bottom="32dp">
+        <shape android:shape="oval">
+            <solid android:color="#40FFFFFF"/>
+        </shape>
+    </item>
+</layer-list>

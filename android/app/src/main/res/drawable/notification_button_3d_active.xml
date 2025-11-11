@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Shadow Layer 1 (Outer) - Purple glow -->
+    <item
+        android:top="2dp"
+        android:left="2dp"
+        android:right="2dp"
+        android:bottom="2dp">
+        <shape android:shape="oval">
+            <solid android:color="#4D3D2E4F"/>
+            <size android:width="48dp" android:height="48dp"/>
+        </shape>
+    </item>
+    
+    <!-- Shadow Layer 2 (Middle) -->
+    <item
+        android:top="1dp"
+        android:left="1dp"
+        android:right="1dp"
+        android:bottom="1dp">
+        <shape android:shape="oval">
+            <solid android:color="#663D2E4F"/>
+        </shape>
+    </item>
+    
+    <!-- Main Button with Gradient (Active - Brighter) -->
+    <item>
+        <shape android:shape="oval">
+            <gradient
+                android:angle="135"
+                android:startColor="#6A4C93"
+                android:centerColor="#8B6BB8"
+                android:endColor="#6A4C93"
+                android:type="linear"/>
+            <stroke
+                android:width="1.5dp"
+                android:color="#8B6BB8"/>
+        </shape>
+    </item>
+    
+    <!-- Top Highlight (Brighter for active) -->
+    <item
+        android:top="4dp"
+        android:left="8dp"
+        android:right="8dp"
+        android:bottom="24dp">
+        <shape android:shape="oval">
+            <solid android:color="#33FFFFFF"/>
+        </shape>
+    </item>
+</layer-list>

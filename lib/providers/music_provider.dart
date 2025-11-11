@@ -155,6 +155,11 @@ class MusicProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void reorderQueue(int oldIndex, int newIndex) {
+    _audioHandler.reorderQueue(oldIndex, newIndex);
+    notifyListeners();
+  }
+
   Future<bool> deleteSong(Song song) async {
     // Delete the actual file from device
     final deleted = await _songService.deleteSongFile(song);

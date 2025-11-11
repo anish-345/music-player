@@ -20,26 +20,7 @@ class MusicAudioHandler extends BaseAudioHandler {
   void _init() {
     // Only update on actual state changes, not every event
     _audioPlayer.playerStateStream.distinct().listen((state) {
-      playbackState.add(playbackState.value.copyWith(
-        controls: [
-          MediaControl.skipToPrevious,
-          state.playing ? MediaControl.pause : MediaControl.play,
-          MediaControl.skipToNext,
-        ],
-        systemActions: const {
-          MediaAction.seek,
-        },
-        androidCompactActionIndices: const [0, 1, 2],
-        processingState: const {
-          ProcessingState.idle: AudioProcessingState.idle,
-          ProcessingState.loading: AudioProcessingState.loading,
-          ProcessingState.buffering: AudioProcessingState.buffering,
-          ProcessingState.ready: AudioProcessingState.ready,
-          ProcessingState.completed: AudioProcessingState.completed,
-        }[state.processingState]!,
-        playing: state.playing,
-        queueIndex: _currentIndex,
-      ));
+      _updatePlaybackState(state);
 
       // Auto-play next song when current song completes
       if (state.processingState == ProcessingState.completed) {
@@ -47,16 +28,82 @@ class MusicAudioHandler extends BaseAudioHandler {
       }
     });
 
-    // Throttle position updates to once per second to save battery
-    _audioPlayer.positionStream
-        .throttleTime(const Duration(seconds: 1))
-        .listen((position) {
+    // Update position and duration for progress bar
+    _audioPlayer.positionStream.listen((position) {
+      final duration = _audioPlayer.duration ?? Duration.zero;
       if (playbackState.hasValue) {
         playbackState.add(playbackState.value.copyWith(
           updatePosition: position,
+          bufferedPosition: duration,
         ));
       }
     });
+
+    // Update duration when it changes
+    _audioPlayer.durationStream.listen((duration) {
+      if (duration != null && playbackState.hasValue) {
+        playbackState.add(playbackState.value.copyWith(
+          bufferedPosition: duration,
+        ));
+      }
+    });
+  }
+
+  void _updatePlaybackState(PlayerState state) {
+    playbackState.add(playbackState.value.copyWith(
+      controls: [
+        MediaControl.skipToPrevious,
+        state.playing ? MediaControl.pause : MediaControl.play,
+        MediaControl.skipToNext,
+        // Shuffle control - use standard icon for now
+        MediaControl(
+          androidIcon: 'drawable/ic_shuffle',
+          label: _isShuffled ? 'Shuffle: On' : 'Shuffle: Off',
+          action: MediaAction.custom,
+          customAction: CustomMediaAction(
+            name: 'shuffle',
+            extras: {'enabled': _isShuffled},
+          ),
+        ),
+        // Repeat control - changes icon based on mode
+        MediaControl(
+          androidIcon: _loopMode == LoopMode.one
+              ? 'drawable/ic_repeat_one'
+              : 'drawable/ic_repeat',
+          label: _loopMode == LoopMode.one
+              ? 'Repeat: One'
+              : _loopMode == LoopMode.all
+                  ? 'Repeat: All'
+                  : 'Repeat: Off',
+          action: MediaAction.custom,
+          customAction: CustomMediaAction(
+            name: 'repeat',
+            extras: {'mode': _loopMode.index},
+          ),
+        ),
+      ],
+      systemActions: const {
+        MediaAction.seek,
+      },
+      androidCompactActionIndices: const [0, 1, 2],
+      processingState: const {
+        ProcessingState.idle: AudioProcessingState.idle,
+        ProcessingState.loading: AudioProcessingState.loading,
+        ProcessingState.buffering: AudioProcessingState.buffering,
+        ProcessingState.ready: AudioProcessingState.ready,
+        ProcessingState.completed: AudioProcessingState.completed,
+      }[state.processingState]!,
+      playing: state.playing,
+      queueIndex: _currentIndex,
+      shuffleMode: _isShuffled
+          ? AudioServiceShuffleMode.all
+          : AudioServiceShuffleMode.none,
+      repeatMode: _loopMode == LoopMode.one
+          ? AudioServiceRepeatMode.one
+          : _loopMode == LoopMode.all
+              ? AudioServiceRepeatMode.all
+              : AudioServiceRepeatMode.none,
+    ));
   }
 
   @override
@@ -81,7 +128,9 @@ class MusicAudioHandler extends BaseAudioHandler {
                   id: s.id,
                   title: s.title,
                   artist: s.artist,
-                  artUri: Uri.parse('asset:///assets/images/muico.png'),
+                  duration: Duration(milliseconds: s.duration),
+                  artUri: Uri.parse(
+                      'android.resource://com.example.myapp/mipmap/ic_launcher'),
                 ))
             .toList();
 
@@ -92,7 +141,9 @@ class MusicAudioHandler extends BaseAudioHandler {
         id: song.id,
         title: song.title,
         artist: song.artist,
-        artUri: Uri.parse('asset:///assets/images/muico.png'),
+        duration: Duration(milliseconds: song.duration),
+        artUri: Uri.parse(
+            'android.resource://com.example.myapp/mipmap/ic_launcher'),
         extras: {
           'hideMediaRoute': true,
         },
@@ -164,7 +215,9 @@ class MusicAudioHandler extends BaseAudioHandler {
               id: s.id,
               title: s.title,
               artist: s.artist,
-              artUri: Uri.parse('asset:///assets/images/muico.png'),
+              duration: Duration(milliseconds: s.duration),
+              artUri: Uri.parse(
+                  'android.resource://com.example.myapp/mipmap/ic_launcher'),
             ))
         .toList();
     _queueSubject.add(mediaItems);
@@ -177,7 +230,9 @@ class MusicAudioHandler extends BaseAudioHandler {
               id: s.id,
               title: s.title,
               artist: s.artist,
-              artUri: Uri.parse('asset:///assets/images/muico.png'),
+              duration: Duration(milliseconds: s.duration),
+              artUri: Uri.parse(
+                  'android.resource://com.example.myapp/mipmap/ic_launcher'),
             ))
         .toList();
     _queueSubject.add(mediaItems);
@@ -194,11 +249,46 @@ class MusicAudioHandler extends BaseAudioHandler {
                 id: s.id,
                 title: s.title,
                 artist: s.artist,
-                artUri: Uri.parse('asset:///assets/images/muico.png'),
+                duration: Duration(milliseconds: s.duration),
+                artUri: Uri.parse(
+                    'android.resource://com.example.myapp/mipmap/ic_launcher'),
               ))
           .toList();
       _queueSubject.add(mediaItems);
     }
+  }
+
+  void reorderQueue(int oldIndex, int newIndex) {
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+
+    // Don't allow reordering the currently playing song
+    if (oldIndex == _currentIndex) {
+      return;
+    }
+
+    final song = _songQueue.removeAt(oldIndex);
+    _songQueue.insert(newIndex, song);
+
+    // Update current index if needed
+    if (oldIndex < _currentIndex && newIndex >= _currentIndex) {
+      _currentIndex--;
+    } else if (oldIndex > _currentIndex && newIndex <= _currentIndex) {
+      _currentIndex++;
+    }
+
+    final mediaItems = _songQueue
+        .map((s) => MediaItem(
+              id: s.id,
+              title: s.title,
+              artist: s.artist,
+              duration: Duration(milliseconds: s.duration),
+              artUri: Uri.parse(
+                  'android.resource://com.example.myapp/mipmap/ic_launcher'),
+            ))
+        .toList();
+    _queueSubject.add(mediaItems);
   }
 
   void toggleShuffle() {
@@ -213,6 +303,9 @@ class MusicAudioHandler extends BaseAudioHandler {
       _songQueue = List.from(_originalQueue);
       _currentIndex = _songQueue.indexOf(currentSong);
     }
+    // Update notification controls
+    final currentState = _audioPlayer.playerState;
+    _updatePlaybackState(currentState);
   }
 
   void toggleRepeatMode() {
@@ -230,6 +323,21 @@ class MusicAudioHandler extends BaseAudioHandler {
         _loopMode = LoopMode.off;
         // Turn off loop mode
         _audioPlayer.setLoopMode(LoopMode.off);
+        break;
+    }
+    // Update notification controls
+    final currentState = _audioPlayer.playerState;
+    _updatePlaybackState(currentState);
+  }
+
+  @override
+  Future<void> customAction(String name, [Map<String, dynamic>? extras]) async {
+    switch (name) {
+      case 'shuffle':
+        toggleShuffle();
+        break;
+      case 'repeat':
+        toggleRepeatMode();
         break;
     }
   }
