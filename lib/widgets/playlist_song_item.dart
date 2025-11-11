@@ -4,10 +4,15 @@ import '../models/song.dart';
 import '../providers/music_provider.dart';
 import '../constants/app_theme.dart';
 
-class SongListItem extends StatelessWidget {
+class PlaylistSongItem extends StatelessWidget {
   final Song song;
+  final String playlistId;
 
-  const SongListItem({super.key, required this.song});
+  const PlaylistSongItem({
+    super.key,
+    required this.song,
+    required this.playlistId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -109,11 +114,9 @@ class SongListItem extends StatelessWidget {
                       case 'add_queue':
                         musicProvider.addToQueue(song);
                         break;
-                      case 'add_playlist':
-                        _showAddToPlaylistDialog(context, musicProvider, song);
-                        break;
-                      case 'delete':
-                        _showDeleteConfirmation(context, musicProvider);
+                      case 'remove':
+                        musicProvider.removeSongFromPlaylist(
+                            playlistId, song.id);
                         break;
                     }
                   },
@@ -158,27 +161,7 @@ class SongListItem extends StatelessWidget {
                       ),
                     ),
                     PopupMenuItem(
-                      value: 'add_playlist',
-                      child: Container(
-                        decoration: AppTheme.popup3DDecoration,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
-                        margin: const EdgeInsets.symmetric(vertical: 4),
-                        child: const Row(
-                          children: [
-                            Icon(Icons.playlist_add,
-                                color: AppTheme.primaryTextColor),
-                            SizedBox(width: 12),
-                            Text('Add to Playlist',
-                                style: TextStyle(
-                                    color: AppTheme.primaryTextColor,
-                                    fontWeight: FontWeight.w500)),
-                          ],
-                        ),
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'delete',
+                      value: 'remove',
                       child: Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -195,9 +178,9 @@ class SongListItem extends StatelessWidget {
                             horizontal: 12, vertical: 8),
                         child: const Row(
                           children: [
-                            Icon(Icons.delete, color: Colors.white),
+                            Icon(Icons.remove_circle, color: Colors.white),
                             SizedBox(width: 12),
-                            Text('Delete',
+                            Text('Remove from Playlist',
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w500)),
@@ -211,162 +194,6 @@ class SongListItem extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  void _showAddToPlaylistDialog(
-      BuildContext context, MusicProvider musicProvider, Song song) {
-    final playlists = musicProvider.playlists;
-
-    if (playlists.isEmpty) {
-      return;
-    }
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        title: const Text('Add to Playlist',
-            style: TextStyle(color: AppTheme.primaryTextColor)),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: playlists.length,
-            itemBuilder: (context, index) {
-              final playlist = playlists[index];
-              return ListTile(
-                leading: const Icon(Icons.playlist_play,
-                    color: AppTheme.primaryTextColor),
-                title: Text(playlist.name,
-                    style: const TextStyle(color: AppTheme.primaryTextColor)),
-                onTap: () {
-                  musicProvider.addSongToPlaylist(playlist.id, song.id);
-                  Navigator.pop(context);
-                },
-              );
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel',
-                style: TextStyle(color: AppTheme.secondaryTextColor)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showDeleteConfirmation(
-      BuildContext context, MusicProvider musicProvider) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
-          children: [
-            Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 28),
-            SizedBox(width: 12),
-            Text('Delete Song?',
-                style: TextStyle(color: AppTheme.primaryTextColor)),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Are you sure you want to permanently delete this song from your device?',
-              style: const TextStyle(
-                color: AppTheme.secondaryTextColor,
-                fontSize: 15,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.1),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    song.title,
-                    style: const TextStyle(
-                      color: AppTheme.primaryTextColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    song.artist,
-                    style: const TextStyle(
-                      color: AppTheme.secondaryTextColor,
-                      fontSize: 13,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              '⚠️ This action cannot be undone!',
-              style: TextStyle(
-                color: Colors.red.shade300,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel',
-                style: TextStyle(
-                    color: AppTheme.secondaryTextColor, fontSize: 16)),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.red.shade900, Colors.red.shade700],
-              ),
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: AppTheme.button3DShadow,
-            ),
-            child: TextButton.icon(
-              onPressed: () async {
-                Navigator.pop(context);
-                // Delete the song
-                await musicProvider.deleteSong(song);
-              },
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              ),
-              icon: const Icon(Icons.delete_forever, color: Colors.white),
-              label: const Text('Delete',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold)),
-            ),
-          ),
-        ],
       ),
     );
   }

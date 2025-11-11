@@ -18,15 +18,29 @@ A modern, feature-rich Flutter music player app for Android with a stunning 3D U
 - **Queue Management**: Add, remove, and reorder songs
 - **Shuffle Mode**: Randomize playback order
 - **Repeat Modes**: Off, Repeat All, Repeat One
+- **Play Next**: Add songs to play immediately after current track
+- **Add to Queue**: Queue songs for later playback
+
+### 📋 Playlist Management
+- **Create Playlists**: Organize your music into custom playlists
+- **Multi-Select**: Add multiple songs to playlists at once
+- **Play All**: Play entire playlist with one tap
+- **Shuffle Playlist**: Randomize playlist playback
+- **Remove from Playlist**: Remove songs without deleting files
+- **Playlist-Specific Actions**: Different menu options in playlists
 
 ### 🔍 Smart Features
 - **Real-time Search**: Filter songs by title or artist
 - **Public Folder Scanning**: Only scans music from public directories
 - **Swipe Gestures**: Swipe mini player to change tracks
-- **Three-dot Menu**: Quick actions (Play Next, Add to Queue, Delete)
+- **File Deletion**: Permanently delete songs from device with confirmation
+- **Smart Permissions**: Runtime permission requests for storage access
+- **Context Menus**: Quick actions (Play Next, Add to Queue, Add to Playlist, Delete)
 
 ### 📱 User Interface
-- **Home Screen**: ListView of all audio files with search
+- **Home Screen**: ListView of all audio files with search and sorting
+- **Playlist Screen**: Manage and view all your playlists
+- **Playlist Detail**: View songs in playlist with play controls
 - **Mini Player**: Persistent bottom player with swipe controls
 - **Full-Screen Player**: Complete playback interface with:
   - Play/Pause, Next, Previous controls
@@ -34,6 +48,8 @@ A modern, feature-rich Flutter music player app for Android with a stunning 3D U
   - Progress bar with seek functionality
   - Share and Queue buttons
   - Album art display
+- **Queue Screen**: View and manage current playback queue
+- **Confirmation Dialogs**: Safe deletion with detailed warnings
 
 ## 🛠️ Tech Stack
 
@@ -50,13 +66,14 @@ A modern, feature-rich Flutter music player app for Android with a stunning 3D U
 dependencies:
   flutter:
     sdk: flutter
-  just_audio: ^0.9.36
+  just_audio: ^0.10.5
   audio_service: ^0.18.12
-  permission_handler: ^11.0.1
+  permission_handler: ^12.0.1
   on_audio_query: ^2.9.0
   provider: ^6.1.1
-  share_plus: ^7.2.1
-  rxdart: ^0.27.7
+  share_plus: ^12.0.1
+  rxdart: ^0.28.0
+  shared_preferences: ^2.2.2
 ```
 
 ## 🚀 Getting Started
@@ -89,24 +106,27 @@ dependencies:
 ```
 lib/
 ├── constants/
-│   └── app_theme.dart          # App-wide theme and gradients
+│   └── app_theme.dart              # App-wide theme and gradients
 ├── models/
-│   └── song.dart               # Song data model
+│   ├── song.dart                   # Song data model
+│   └── playlist.dart               # Playlist data model
 ├── providers/
-│   └── music_provider.dart     # State management
+│   └── music_provider.dart         # State management
 ├── screens/
-│   ├── home_screen.dart        # Main screen with song list
-│   ├── player_screen.dart      # Full-screen player
-│   └── queue_screen.dart       # Queue management
+│   ├── home_screen.dart            # Main screen with song list
+│   ├── player_screen.dart          # Full-screen player
+│   ├── queue_screen.dart           # Queue management
+│   ├── playlist_screen.dart        # Playlist overview
+│   └── playlist_detail_screen.dart # Playlist detail view
 ├── services/
-│   ├── audio_handler.dart      # Audio service handler
-│   ├── audio_service.dart      # Audio playback service
-│   ├── permission_service.dart # Permission handling
-│   └── song_service.dart       # Song fetching
+│   ├── audio_handler.dart          # Audio service handler
+│   ├── song_service.dart           # Song fetching & deletion
+│   └── playlist_service.dart       # Playlist management
 ├── widgets/
-│   ├── mini_player.dart        # Bottom mini player
-│   └── song_list_item.dart     # Song list item widget
-└── main.dart                   # App entry point
+│   ├── mini_player.dart            # Bottom mini player
+│   ├── song_list_item.dart         # Song list item widget
+│   └── playlist_song_item.dart     # Playlist song item widget
+└── main.dart                       # App entry point
 ```
 
 ## 🎨 Design System
@@ -131,29 +151,51 @@ lib/
 
 The app requires the following permissions:
 - `READ_EXTERNAL_STORAGE` - Access music files
+- `WRITE_EXTERNAL_STORAGE` - Delete music files
 - `READ_MEDIA_AUDIO` - Android 13+ audio access
+- `MANAGE_EXTERNAL_STORAGE` - Android 11+ file management
 - `WAKE_LOCK` - Keep device awake during playback
 - `FOREGROUND_SERVICE` - Background playback
 - `FOREGROUND_SERVICE_MEDIA_PLAYBACK` - Media playback service
+- `POST_NOTIFICATIONS` - Show playback notifications
 
-## 📱 Screenshots
+## 📱 Key Features Explained
 
 ### Home Screen
-- Song list with search functionality
+- Song list with real-time search functionality
+- Sort by title, artist, or date
 - Custom app icon with gradient
-- 3D styled song items
+- 3D styled song items with context menus
+- Quick actions: Play Next, Add to Queue, Add to Playlist, Delete
+
+### Playlist Management
+- Create unlimited custom playlists
+- Multi-select songs for batch adding
+- Play All or Shuffle entire playlists
+- Remove songs from playlists without deleting files
+- Persistent storage using SharedPreferences
 
 ### Mini Player
-- Persistent bottom player
-- Swipe to change tracks
+- Persistent bottom player across all screens
+- Swipe left/right to change tracks
 - Play/pause and next controls
+- Tap to expand to full player
 
 ### Full Player
 - Large album art display
 - Complete playback controls
 - Shuffle and repeat options
-- Progress bar with seek
-- Share and queue buttons
+- Progress bar with seek functionality
+- Share songs with other apps
+- View and manage playback queue
+
+### File Deletion
+- Confirmation dialog before deletion
+- Shows song details and warning
+- Permanently deletes from device storage
+- Removes from all playlists automatically
+- Handles currently playing songs gracefully
+- Runtime permission requests
 
 ## 🤝 Contributing
 

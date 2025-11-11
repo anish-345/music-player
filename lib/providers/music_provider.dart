@@ -155,10 +155,37 @@ class MusicProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteSong(Song song) {
-    _songs.removeWhere((s) => s.id == song.id);
-    _filteredSongs.removeWhere((s) => s.id == song.id);
-    notifyListeners();
+  Future<bool> deleteSong(Song song) async {
+    // Delete the actual file from device
+    final deleted = await _songService.deleteSongFile(song);
+
+    if (deleted) {
+      // Remove from app state
+      _songs.removeWhere((s) => s.id == song.id);
+      _filteredSongs.removeWhere((s) => s.id == song.id);
+
+      // Remove from all playlists
+      for (var playlist in _playlists) {
+        playlist.songIds.remove(song.id);
+      }
+      await _playlistService.savePlaylists(_playlists);
+
+      // If currently playing, skip to next
+      if (currentSong?.id == song.id) {
+        await playNext();
+      }
+
+      // Remove from queue if present
+      final queueIndex =
+          _audioHandler.songQueue.indexWhere((s) => s.id == song.id);
+      if (queueIndex != -1) {
+        _audioHandler.removeFromQueue(queueIndex);
+      }
+
+      notifyListeners();
+    }
+
+    return deleted;
   }
 
   void toggleShuffle() {

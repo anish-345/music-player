@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/playlist.dart';
 import '../providers/music_provider.dart';
 import '../constants/app_theme.dart';
-import '../widgets/song_list_item.dart';
+import '../widgets/playlist_song_item.dart';
 
 class PlaylistDetailScreen extends StatelessWidget {
   final Playlist playlist;
@@ -86,7 +86,10 @@ class PlaylistDetailScreen extends StatelessWidget {
                       ),
                       itemCount: songs.length,
                       itemBuilder: (context, index) {
-                        return SongListItem(song: songs[index]);
+                        return PlaylistSongItem(
+                          song: songs[index],
+                          playlistId: playlist.id,
+                        );
                       },
                     );
                   },
@@ -127,12 +130,6 @@ class PlaylistDetailScreen extends StatelessWidget {
         allSongs.where((song) => !playlistSongIds.contains(song.id)).toList();
 
     if (availableSongs.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('All songs are already in this playlist'),
-          duration: Duration(seconds: 2),
-        ),
-      );
       return;
     }
 
@@ -308,12 +305,6 @@ class _MultiSelectSongsDialogState extends State<_MultiSelectSongsDialog> {
       widget.musicProvider.addSongToPlaylist(widget.playlistId, songId);
     }
     Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${_selectedSongIds.length} songs added to playlist'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
   }
 
   @override

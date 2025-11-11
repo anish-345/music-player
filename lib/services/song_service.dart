@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../models/song.dart';
 
 class SongService {
@@ -45,6 +47,42 @@ class SongService {
     } catch (e) {
       // Error fetching songs
       return [];
+    }
+  }
+
+  Future<bool> deleteSongFile(Song song) async {
+    try {
+      // Request storage permissions
+      if (Platform.isAndroid) {
+        // For Android 11+ (API 30+), we need MANAGE_EXTERNAL_STORAGE
+        if (await Permission.manageExternalStorage.isDenied) {
+          final status = await Permission.manageExternalStorage.request();
+          if (!status.isGranted) {
+            // Try with regular storage permission
+            final storageStatus = await Permission.storage.request();
+            if (!storageStatus.isGranted) {
+              return false;
+            }
+          }
+        }
+      }
+
+      // Delete the file
+      final file = File(song.path);
+      if (await file.exists()) {
+        await file.delete();
+
+        // Refresh media store on Android
+        if (Platform.isAndroid) {
+          await _audioQuery.scanMedia(song.path);
+        }
+
+        return true;
+      }
+      return false;
+    } catch (e) {
+      // Error deleting file
+      return false;
     }
   }
 }

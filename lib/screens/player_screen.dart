@@ -161,7 +161,7 @@ class PlayerScreen extends StatelessWidget {
                 final originalFileName = song.path.split('/').last;
                 await Share.shareXFiles(
                   [XFile(song.path, name: originalFileName)],
-                  text: '${song.title} - ${song.artist}',
+                  subject: '${song.title} - ${song.artist}',
                 );
               }
             } catch (e) {
@@ -203,63 +203,72 @@ class PlayerScreen extends StatelessWidget {
   }
 
   Widget _buildProgressBar(MusicProvider musicProvider) {
-    final position = musicProvider.audioPlayer.position;
-    final duration = musicProvider.audioPlayer.duration ?? Duration.zero;
+    return StreamBuilder<Duration>(
+      stream: musicProvider.audioPlayer.positionStream,
+      builder: (context, positionSnapshot) {
+        final position = positionSnapshot.data ?? Duration.zero;
+        final duration = musicProvider.audioPlayer.duration ?? Duration.zero;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32.0),
-      child: Column(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.darkNavy.withValues(alpha: 0.5),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32.0),
+          child: Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.darkNavy.withValues(alpha: 0.5),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: SliderTheme(
-              data: SliderThemeData(
-                trackHeight: 5,
-                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
-                overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
-                activeTrackColor: AppTheme.primaryTextColor,
-                inactiveTrackColor: Colors.white.withValues(alpha: 0.2),
-                thumbColor: AppTheme.primaryTextColor,
-                overlayColor: Colors.white.withValues(alpha: 0.2),
+                child: SliderTheme(
+                  data: SliderThemeData(
+                    trackHeight: 5,
+                    thumbShape:
+                        const RoundSliderThumbShape(enabledThumbRadius: 8),
+                    overlayShape:
+                        const RoundSliderOverlayShape(overlayRadius: 16),
+                    activeTrackColor: AppTheme.primaryTextColor,
+                    inactiveTrackColor: Colors.white.withValues(alpha: 0.2),
+                    thumbColor: AppTheme.primaryTextColor,
+                    overlayColor: Colors.white.withValues(alpha: 0.2),
+                  ),
+                  child: Slider(
+                    value: position.inSeconds.toDouble(),
+                    max: duration.inSeconds.toDouble() > 0
+                        ? duration.inSeconds.toDouble()
+                        : 1.0,
+                    onChanged: (value) {
+                      musicProvider.seekTo(Duration(seconds: value.toInt()));
+                    },
+                  ),
+                ),
               ),
-              child: Slider(
-                value: position.inSeconds.toDouble(),
-                max: duration.inSeconds.toDouble() > 0
-                    ? duration.inSeconds.toDouble()
-                    : 1.0,
-                onChanged: (value) {
-                  musicProvider.seekTo(Duration(seconds: value.toInt()));
-                },
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      _formatDuration(position),
+                      style:
+                          TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+                    ),
+                    Text(
+                      _formatDuration(duration),
+                      style:
+                          TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+                    ),
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  _formatDuration(position),
-                  style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
-                ),
-                Text(
-                  _formatDuration(duration),
-                  style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 

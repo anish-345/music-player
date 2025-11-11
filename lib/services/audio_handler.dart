@@ -40,6 +40,11 @@ class MusicAudioHandler extends BaseAudioHandler {
         playing: state.playing,
         queueIndex: _currentIndex,
       ));
+
+      // Auto-play next song when current song completes
+      if (state.processingState == ProcessingState.completed) {
+        skipToNext();
+      }
     });
 
     // Throttle position updates to once per second to save battery
@@ -88,6 +93,9 @@ class MusicAudioHandler extends BaseAudioHandler {
         title: song.title,
         artist: song.artist,
         artUri: Uri.parse('asset:///assets/images/muico.png'),
+        extras: {
+          'hideMediaRoute': true,
+        },
       );
 
       mediaItem.add(currentMediaItem);
@@ -95,8 +103,7 @@ class MusicAudioHandler extends BaseAudioHandler {
       await _audioPlayer.setFilePath(song.path);
       await _audioPlayer.play();
     } catch (e) {
-      print('Error playing song: $e');
-      // Try to skip to next song if available
+      // Error playing song - try to skip to next song if available
       if (_songQueue.length > 1 && _currentIndex < _songQueue.length - 1) {
         await skipToNext();
       }
@@ -212,15 +219,17 @@ class MusicAudioHandler extends BaseAudioHandler {
     switch (_loopMode) {
       case LoopMode.off:
         _loopMode = LoopMode.all;
-        _audioPlayer.setLoopMode(_loopMode);
+        // Don't set loop mode on audio player - we handle it manually
         break;
       case LoopMode.all:
         _loopMode = LoopMode.one;
-        _audioPlayer.setLoopMode(_loopMode);
+        // Set loop mode only for repeat one
+        _audioPlayer.setLoopMode(LoopMode.one);
         break;
       case LoopMode.one:
         _loopMode = LoopMode.off;
-        _audioPlayer.setLoopMode(_loopMode);
+        // Turn off loop mode
+        _audioPlayer.setLoopMode(LoopMode.off);
         break;
     }
   }
