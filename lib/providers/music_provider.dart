@@ -82,6 +82,13 @@ class MusicProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> addSongsToPlaylist(
+      String playlistId, List<String> songIds) async {
+    await _playlistService.addSongsToPlaylist(playlistId, songIds);
+    _playlists = await _playlistService.loadPlaylists();
+    notifyListeners();
+  }
+
   Future<void> removeSongFromPlaylist(String playlistId, String songId) async {
     await _playlistService.removeSongFromPlaylist(playlistId, songId);
     _playlists = await _playlistService.loadPlaylists();

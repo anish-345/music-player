@@ -300,11 +300,12 @@ class _MultiSelectSongsDialogState extends State<_MultiSelectSongsDialog> {
     });
   }
 
-  void _addSelectedSongs() {
-    for (final songId in _selectedSongIds) {
-      widget.musicProvider.addSongToPlaylist(widget.playlistId, songId);
+  void _addSelectedSongs() async {
+    await widget.musicProvider
+        .addSongsToPlaylist(widget.playlistId, _selectedSongIds.toList());
+    if (context.mounted) {
+      Navigator.pop(context);
     }
-    Navigator.pop(context);
   }
 
   @override

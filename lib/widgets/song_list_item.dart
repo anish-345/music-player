@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../models/song.dart';
 import '../providers/music_provider.dart';
 import '../constants/app_theme.dart';
@@ -352,8 +353,60 @@ class SongListItem extends StatelessWidget {
             child: TextButton.icon(
               onPressed: () async {
                 Navigator.pop(context);
+
+                // Show loading
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Row(
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          Text('Deleting...'),
+                        ],
+                      ),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                }
+
                 // Delete the song
-                await musicProvider.deleteSong(song);
+                final deleted = await musicProvider.deleteSong(song);
+
+                // Show result
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        deleted
+                            ? '✓ Song deleted successfully'
+                            : '✗ Failed to delete. Grant storage permission in Settings.',
+                      ),
+                      backgroundColor:
+                          deleted ? Colors.green.shade700 : Colors.red.shade700,
+                      duration: const Duration(seconds: 3),
+                      action: deleted
+                          ? null
+                          : SnackBarAction(
+                              label: 'Settings',
+                              textColor: Colors.white,
+                              onPressed: () {
+                                // Open app settings
+                                openAppSettings();
+                              },
+                            ),
+                    ),
+                  );
+                }
               },
               style: TextButton.styleFrom(
                 backgroundColor: Colors.transparent,

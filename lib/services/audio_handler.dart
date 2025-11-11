@@ -55,31 +55,21 @@ class MusicAudioHandler extends BaseAudioHandler {
         MediaControl.skipToPrevious,
         state.playing ? MediaControl.pause : MediaControl.play,
         MediaControl.skipToNext,
-        // Shuffle control - use standard icon for now
+        // Shuffle control
         MediaControl(
           androidIcon: 'drawable/ic_shuffle',
-          label: _isShuffled ? 'Shuffle: On' : 'Shuffle: Off',
+          label: 'Shuffle',
           action: MediaAction.custom,
-          customAction: CustomMediaAction(
-            name: 'shuffle',
-            extras: {'enabled': _isShuffled},
-          ),
+          customAction: const CustomMediaAction(name: 'shuffle'),
         ),
-        // Repeat control - changes icon based on mode
+        // Repeat control
         MediaControl(
           androidIcon: _loopMode == LoopMode.one
               ? 'drawable/ic_repeat_one'
               : 'drawable/ic_repeat',
-          label: _loopMode == LoopMode.one
-              ? 'Repeat: One'
-              : _loopMode == LoopMode.all
-                  ? 'Repeat: All'
-                  : 'Repeat: Off',
+          label: 'Repeat',
           action: MediaAction.custom,
-          customAction: CustomMediaAction(
-            name: 'repeat',
-            extras: {'mode': _loopMode.index},
-          ),
+          customAction: const CustomMediaAction(name: 'repeat'),
         ),
       ],
       systemActions: const {

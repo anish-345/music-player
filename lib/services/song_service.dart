@@ -52,16 +52,23 @@ class SongService {
 
   Future<bool> deleteSongFile(Song song) async {
     try {
-      // Request storage permissions
+      // Request storage permissions for Android
       if (Platform.isAndroid) {
-        // For Android 11+ (API 30+), we need MANAGE_EXTERNAL_STORAGE
-        if (await Permission.manageExternalStorage.isDenied) {
-          final status = await Permission.manageExternalStorage.request();
+        // Check and request MANAGE_EXTERNAL_STORAGE permission
+        var status = await Permission.manageExternalStorage.status;
+
+        if (!status.isGranted) {
+          // Request the permission
+          status = await Permission.manageExternalStorage.request();
+
+          // If still not granted, try regular storage permission
           if (!status.isGranted) {
-            // Try with regular storage permission
-            final storageStatus = await Permission.storage.request();
+            var storageStatus = await Permission.storage.status;
             if (!storageStatus.isGranted) {
-              return false;
+              storageStatus = await Permission.storage.request();
+              if (!storageStatus.isGranted) {
+                return false;
+              }
             }
           }
         }
@@ -72,16 +79,20 @@ class SongService {
       if (await file.exists()) {
         await file.delete();
 
-        // Refresh media store on Android
+        // Refresh media store on Android to update the system
         if (Platform.isAndroid) {
-          await _audioQuery.scanMedia(song.path);
+          try {
+            await _audioQuery.scanMedia(song.path);
+          } catch (e) {
+            // Ignore scan errors
+          }
         }
 
         return true;
       }
       return false;
     } catch (e) {
-      // Error deleting file
+      // Error deleting file - permission denied or file in use
       return false;
     }
   }

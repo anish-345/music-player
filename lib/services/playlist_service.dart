@@ -50,6 +50,18 @@ class PlaylistService {
     }
   }
 
+  Future<void> addSongsToPlaylist(
+      String playlistId, List<String> songIds) async {
+    final playlists = await loadPlaylists();
+    final playlist = playlists.firstWhere((p) => p.id == playlistId);
+    for (final songId in songIds) {
+      if (!playlist.songIds.contains(songId)) {
+        playlist.songIds.add(songId);
+      }
+    }
+    await savePlaylists(playlists);
+  }
+
   Future<void> removeSongFromPlaylist(String playlistId, String songId) async {
     final playlists = await loadPlaylists();
     final playlist = playlists.firstWhere((p) => p.id == playlistId);
