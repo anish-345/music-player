@@ -6,9 +6,17 @@
 -keep class io.flutter.** { *; }
 -keep class io.flutter.plugins.** { *; }
 
-# Audio Service
+# Audio Service - Keep all classes and methods
 -keep class com.ryanheise.audioservice.** { *; }
 -keep interface com.ryanheise.audioservice.** { *; }
+-keepclassmembers class com.ryanheise.audioservice.** { *; }
+-keep class * extends com.ryanheise.audioservice.BaseAudioHandler { *; }
+
+# Keep MediaSession and MediaController
+-keep class android.support.v4.media.** { *; }
+-keep class androidx.media.** { *; }
+-dontwarn android.support.v4.media.**
+-dontwarn androidx.media.**
 
 # Just Audio
 -keep class com.ryanheise.just_audio.** { *; }
