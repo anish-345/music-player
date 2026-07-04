@@ -36,6 +36,7 @@ A modern, feature-rich Flutter music player app for Android with a stunning 3D U
 - **File Deletion**: Permanently delete songs from device with confirmation
 - **Smart Permissions**: Runtime permission requests for storage access
 - **Context Menus**: Quick actions (Play Next, Add to Queue, Add to Playlist, Delete)
+- **YouTube to MP3**: Paste, share, or open a YouTube link and convert it to MP3 with the bundled Android binary
 
 ### 📱 User Interface
 - **Home Screen**: ListView of all audio files with search and sorting
@@ -188,6 +189,12 @@ The app requires the following permissions:
 - Progress bar with seek functionality
 - Share songs with other apps
 - View and manage playback queue
+
+### YouTube to MP3
+- Paste a `youtube.com` or `youtu.be` link from the home screen
+- Share a YouTube link to the app through Android's share sheet
+- Open a YouTube link directly with the app through Android intents
+- Converted files are saved to `Downloads/MusicPlayer`
 
 ### File Deletion
 - Confirmation dialog before deletion

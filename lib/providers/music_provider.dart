@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import '../models/song.dart';
@@ -5,19 +7,32 @@ import '../models/playlist.dart';
 import '../services/audio_handler.dart';
 import '../services/song_service.dart';
 import '../services/playlist_service.dart';
+import '../services/youtube_mp3_service.dart';
 
 export 'package:just_audio/just_audio.dart' show LoopMode;
 
 class MusicProvider extends ChangeNotifier {
+  static final RegExp _youtubeUrlPattern = RegExp(
+    r'^https?://(?:[\w-]+\.)?(?:youtube\.com|youtu\.be)(?:[/?#].*)?$',
+    caseSensitive: false,
+  );
+
   final MusicAudioHandler _audioHandler;
   final SongService _songService = SongService();
   final PlaylistService _playlistService = PlaylistService();
+  final YoutubeMp3Service _youtubeMp3Service = YoutubeMp3Service();
 
   List<Song> _songs = [];
   List<Song> _filteredSongs = [];
   List<Playlist> _playlists = [];
   bool _isLoading = false;
   String _searchQuery = '';
+  bool _isInitialized = false;
+  bool _isConvertingYoutube = false;
+  String? _latestYoutubeUrl;
+  String? _youtubeConversionMessage;
+  String? _lastDownloadedFilePath;
+  StreamSubscription<String>? _youtubeIntentSubscription;
 
   List<Song> get songs => _searchQuery.isEmpty ? _songs : _filteredSongs;
   List<Playlist> get playlists => _playlists;
@@ -29,6 +44,10 @@ class MusicProvider extends ChangeNotifier {
   String get searchQuery => _searchQuery;
   bool get isShuffled => _audioHandler.isShuffled;
   LoopMode get loopMode => _audioHandler.loopMode;
+  bool get isConvertingYoutube => _isConvertingYoutube;
+  String? get latestYoutubeUrl => _latestYoutubeUrl;
+  String? get youtubeConversionMessage => _youtubeConversionMessage;
+  String? get lastDownloadedFilePath => _lastDownloadedFilePath;
 
   MusicProvider(this._audioHandler) {
     // Only notify on actual state changes (playing/paused/stopped)
@@ -38,6 +57,25 @@ class MusicProvider extends ChangeNotifier {
 
     // Don't listen to position stream here - let widgets that need it subscribe directly
     // This reduces unnecessary rebuilds across the entire app
+  }
+
+  Future<void> initialize() async {
+    if (_isInitialized) {
+      return;
+    }
+
+    _isInitialized = true;
+    await loadSongs();
+
+    _youtubeIntentSubscription ??=
+        _youtubeMp3Service.sharedYoutubeUrls().listen((url) {
+      handleIncomingYoutubeUrl(url);
+    });
+
+    final pendingUrl = await _youtubeMp3Service.consumeSharedYoutubeUrl();
+    if (pendingUrl != null) {
+      await handleIncomingYoutubeUrl(pendingUrl);
+    }
   }
 
   void searchSongs(String query) {
@@ -64,7 +102,71 @@ class MusicProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> handleIncomingYoutubeUrl(String url) async {
+    final trimmedUrl = url.trim();
+    if (trimmedUrl.isEmpty) {
+      return;
+    }
+
+    _latestYoutubeUrl = trimmedUrl;
+    _youtubeConversionMessage = 'Shared YouTube link received. Starting conversion...';
+    notifyListeners();
+
+    await convertYoutubeToMp3(trimmedUrl);
+  }
+
+  Future<void> convertYoutubeToMp3(String url) async {
+    final trimmedUrl = url.trim();
+    if (trimmedUrl.isEmpty) {
+      _youtubeConversionMessage = 'Enter a valid YouTube link.';
+      notifyListeners();
+      return;
+    }
+
+    if (!_isYoutubeUrl(trimmedUrl)) {
+      _youtubeConversionMessage =
+          'Only YouTube links are supported. Use a `youtube.com` or `youtu.be` URL.';
+      _latestYoutubeUrl = trimmedUrl;
+      notifyListeners();
+      return;
+    }
+
+    if (_isConvertingYoutube) {
+      _youtubeConversionMessage = 'A YouTube conversion is already running.';
+      notifyListeners();
+      return;
+    }
+
+    _isConvertingYoutube = true;
+    _latestYoutubeUrl = trimmedUrl;
+    _youtubeConversionMessage = 'Converting YouTube audio to MP3...';
+    notifyListeners();
+
+    final result = await _youtubeMp3Service.convertToMp3(trimmedUrl);
+
+    _isConvertingYoutube = false;
+    _youtubeConversionMessage = result.message;
+    _lastDownloadedFilePath = result.filePath;
+
+    if (result.success) {
+      await loadSongs();
+    } else {
+      notifyListeners();
+    }
+  }
+
+  void clearYoutubeStatus() {
+    _youtubeConversionMessage = null;
+    _latestYoutubeUrl = null;
+    _lastDownloadedFilePath = null;
+    notifyListeners();
+  }
+
+  bool _isYoutubeUrl(String url) {
+    return _youtubeUrlPattern.hasMatch(url);
+  }
   Future<void> createPlaylist(String name) async {
+    await _playlistService.createPlaylist(name);
     await _playlistService.createPlaylist(name);
     _playlists = await _playlistService.loadPlaylists();
     notifyListeners();
@@ -248,6 +350,7 @@ class MusicProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    _youtubeIntentSubscription?.cancel();
     _audioHandler.stop();
     super.dispose();
   }
