@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final hasPermission = await PermissionService.requestStoragePermission();
 
     if (hasPermission && mounted) {
-      Provider.of<MusicProvider>(context, listen: false).loadSongs();
+      await Provider.of<MusicProvider>(context, listen: false).initialize();
     }
   }
 
@@ -70,6 +70,11 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               children: [
                 _buildAppBar(),
+                Consumer<MusicProvider>(
+                  builder: (context, musicProvider, child) {
+                    return _buildYoutubeToolsCard(context, musicProvider);
+                  },
+                ),
                 if (_isSearching) _buildSearchBar(),
                 Expanded(
                   child: Consumer<MusicProvider>(
@@ -135,6 +140,107 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         bottomNavigationBar: const MiniPlayer(),
+      ),
+    );
+  }
+
+  Widget _buildYoutubeToolsCard(
+      BuildContext context, MusicProvider musicProvider) {
+    final hasStatus = musicProvider.youtubeConversionMessage != null ||
+        musicProvider.latestYoutubeUrl != null;
+
+    String subtitle = hasStatus
+        ? musicProvider.youtubeConversionMessage ??
+            'Ready to convert the latest shared YouTube link.'
+        : 'Paste a YouTube link here or share one to this app from another Android app.';
+
+    if (musicProvider.isConvertingYoutube &&
+        musicProvider.latestYoutubeUrl != null) {
+      subtitle = '${subtitle}\n${musicProvider.latestYoutubeUrl}';
+    }
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      padding: const EdgeInsets.all(16),
+      decoration: AppTheme.card3DDecoration,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  musicProvider.isConvertingYoutube
+                      ? Icons.hourglass_top_rounded
+                      : Icons.download_rounded,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'YouTube to MP3',
+                  style: TextStyle(
+                    color: AppTheme.primaryTextColor,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              if (hasStatus)
+                IconButton(
+                  onPressed: musicProvider.isConvertingYoutube
+                      ? null
+                      : musicProvider.clearYoutubeStatus,
+                  icon: const Icon(
+                    Icons.close,
+                    color: AppTheme.secondaryTextColor,
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            subtitle,
+            style: const TextStyle(
+              color: AppTheme.secondaryTextColor,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: musicProvider.isConvertingYoutube
+                  ? null
+                  : () => _showYoutubeDownloadDialog(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white.withValues(alpha: 0.12),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              icon: Icon(
+                musicProvider.isConvertingYoutube
+                    ? Icons.downloading_rounded
+                    : Icons.link_rounded,
+              ),
+              label: Text(
+                musicProvider.isConvertingYoutube
+                    ? 'Converting...'
+                    : 'Paste YouTube Link',
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -313,6 +419,74 @@ class _HomeScreenState extends State<HomeScreen> {
         onChanged: (value) {
           Provider.of<MusicProvider>(context, listen: false).searchSongs(value);
         },
+      ),
+    );
+  }
+
+  Future<void> _showYoutubeDownloadDialog(BuildContext context) async {
+    final controller = TextEditingController();
+    final musicProvider = Provider.of<MusicProvider>(context, listen: false);
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppTheme.surfaceColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          'Convert YouTube to MP3',
+          style: TextStyle(color: AppTheme.primaryTextColor),
+        ),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            hintText: 'https://youtu.be/...',
+            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
+            filled: true,
+            fillColor: Colors.white.withValues(alpha: 0.06),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Colors.white.withValues(alpha: 0.12),
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Colors.white.withValues(alpha: 0.12),
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          ),
+          keyboardType: TextInputType.url,
+          textInputAction: TextInputAction.done,
+          onSubmitted: (value) async {
+            Navigator.of(dialogContext).pop();
+            await musicProvider.convertYoutubeToMp3(value);
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppTheme.secondaryTextColor),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(dialogContext).pop();
+              await musicProvider.convertYoutubeToMp3(controller.text);
+            },
+            child: const Text('Convert'),
+          ),
+        ],
       ),
     );
   }
