@@ -1,0 +1,614 @@
+- generic [ref=e2]:
+  - region "Skip to main content":
+    - link "Skip to main content" [ref=e3] [cursor=pointer]:
+      - /url: "#__docusaurus_skipToContent_fallback"
+  - navigation "Main" [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - link "Playwright logoPlaywright logo Playwright" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e8]:
+            - img "Playwright logo" [ref=e9]
+            - img "Playwright logo" [ref=e10]
+          - generic [ref=e11]: Playwright
+        - link "Docs" [ref=e12] [cursor=pointer]:
+          - /url: /docs/intro
+        - link "MCP" [ref=e13] [cursor=pointer]:
+          - /url: /mcp/introduction
+        - link "CLI" [ref=e14] [cursor=pointer]:
+          - /url: /agent-cli/introduction
+        - link "API" [ref=e15] [cursor=pointer]:
+          - /url: /docs/api/class-playwright
+        - button "Node.js" [ref=e17] [cursor=pointer]
+      - generic [ref=e18]:
+        - link "GitHub repository" [ref=e19] [cursor=pointer]:
+          - /url: https://github.com/microsoft/playwright
+        - link "Discord server" [ref=e20] [cursor=pointer]:
+          - /url: https://aka.ms/playwright/discord
+        - button "Switch between dark and light mode (currently system mode)" [disabled] [ref=e22]:
+          - img [ref=e23]
+        - button "Search (Meta+k)" [ref=e26] [cursor=pointer]:
+          - generic [ref=e27]:
+            - img [ref=e28]
+            - generic [ref=e31]: Search
+  - generic [ref=e34]:
+    - complementary [ref=e35]:
+      - navigation "Docs sidebar" [ref=e38]:
+        - list [ref=e39]:
+          - listitem [ref=e40]:
+            - link "Introduction" [ref=e41] [cursor=pointer]:
+              - /url: /mcp/introduction
+              - generic "Introduction" [ref=e42]
+          - listitem [ref=e43]:
+            - button "Getting Started" [expanded] [ref=e45] [cursor=pointer]:
+              - generic "Getting Started" [ref=e46]
+            - list [ref=e47]:
+              - listitem [ref=e48]:
+                - link "Installation" [ref=e49] [cursor=pointer]:
+                  - /url: /mcp/installation
+                  - generic "Installation" [ref=e50]
+              - listitem [ref=e51]:
+                - button "Client Setup" [ref=e53] [cursor=pointer]:
+                  - generic "Client Setup" [ref=e54]
+          - listitem [ref=e55]:
+            - button "Core Concepts" [expanded] [ref=e57] [cursor=pointer]:
+              - generic "Core Concepts" [ref=e58]
+            - list [ref=e59]:
+              - listitem [ref=e60]:
+                - link "Snapshots" [ref=e61] [cursor=pointer]:
+                  - /url: /mcp/snapshots
+                  - generic "Snapshots" [ref=e62]
+              - listitem [ref=e63]:
+                - link "Capabilities" [ref=e64] [cursor=pointer]:
+                  - /url: /mcp/capabilities
+                  - generic "Capabilities" [ref=e65]
+              - listitem [ref=e66]:
+                - link "Vision Mode" [ref=e67] [cursor=pointer]:
+                  - /url: /mcp/vision-mode
+                  - generic "Vision Mode" [ref=e68]
+          - listitem [ref=e69]:
+            - button "Browser Automation" [expanded] [ref=e71] [cursor=pointer]:
+              - generic "Browser Automation" [ref=e72]
+            - list [ref=e73]:
+              - listitem [ref=e74]:
+                - link "Navigation" [ref=e75] [cursor=pointer]:
+                  - /url: /mcp/tools/navigation
+                  - generic "Navigation" [ref=e76]
+              - listitem [ref=e77]:
+                - link "Interaction" [ref=e78] [cursor=pointer]:
+                  - /url: /mcp/tools/interaction
+                  - generic "Interaction" [ref=e79]
+              - listitem [ref=e80]:
+                - link "Forms" [ref=e81] [cursor=pointer]:
+                  - /url: /mcp/tools/forms
+                  - generic "Forms" [ref=e82]
+              - listitem [ref=e83]:
+                - link "Keyboard & Mouse" [ref=e84] [cursor=pointer]:
+                  - /url: /mcp/tools/keyboard-mouse
+                  - generic "Keyboard & Mouse" [ref=e85]
+              - listitem [ref=e86]:
+                - link "Tabs" [ref=e87] [cursor=pointer]:
+                  - /url: /mcp/tools/tabs
+                  - generic "Tabs" [ref=e88]
+              - listitem [ref=e89]:
+                - link "Dialogs" [ref=e90] [cursor=pointer]:
+                  - /url: /mcp/tools/dialogs
+                  - generic "Dialogs" [ref=e91]
+              - listitem [ref=e92]:
+                - link "Waiting" [ref=e93] [cursor=pointer]:
+                  - /url: /mcp/tools/waiting
+                  - generic "Waiting" [ref=e94]
+          - listitem [ref=e95]:
+            - button "Network & Storage" [expanded] [ref=e97] [cursor=pointer]:
+              - generic "Network & Storage" [ref=e98]
+            - list [ref=e99]:
+              - listitem [ref=e100]:
+                - link "Network & Mocking" [ref=e101] [cursor=pointer]:
+                  - /url: /mcp/tools/network-mocking
+                  - generic "Network & Mocking" [ref=e102]
+              - listitem [ref=e103]:
+                - link "Storage & Authentication" [ref=e104] [cursor=pointer]:
+                  - /url: /mcp/tools/storage
+                  - generic "Storage & Authentication" [ref=e105]
+          - listitem [ref=e106]:
+            - button "Developer Tools" [expanded] [ref=e108] [cursor=pointer]:
+              - generic "Developer Tools" [ref=e109]
+            - list [ref=e110]:
+              - listitem [ref=e111]:
+                - link "Console" [ref=e112] [cursor=pointer]:
+                  - /url: /mcp/tools/console
+                  - generic "Console" [ref=e113]
+              - listitem [ref=e114]:
+                - link "Screenshots" [ref=e115] [cursor=pointer]:
+                  - /url: /mcp/tools/screenshots
+                  - generic "Screenshots" [ref=e116]
+              - listitem [ref=e117]:
+                - link "Code Execution" [ref=e118] [cursor=pointer]:
+                  - /url: /mcp/tools/code-execution
+                  - generic "Code Execution" [ref=e119]
+              - listitem [ref=e120]:
+                - link "Tracing" [ref=e121] [cursor=pointer]:
+                  - /url: /mcp/tools/tracing
+                  - generic "Tracing" [ref=e122]
+              - listitem [ref=e123]:
+                - link "Testing & Assertions" [ref=e124] [cursor=pointer]:
+                  - /url: /mcp/tools/assertions
+                  - generic "Testing & Assertions" [ref=e125]
+              - listitem [ref=e126]:
+                - link "PDF Export" [ref=e127] [cursor=pointer]:
+                  - /url: /mcp/tools/pdf
+                  - generic "PDF Export" [ref=e128]
+          - listitem [ref=e129]:
+            - link "Video Recording" [ref=e130] [cursor=pointer]:
+              - /url: /mcp/tools/video
+              - generic "Video Recording" [ref=e131]
+          - listitem [ref=e132]:
+            - button "Sessions" [expanded] [ref=e134] [cursor=pointer]:
+              - generic "Sessions" [ref=e135]
+            - list [ref=e136]:
+              - listitem [ref=e137]:
+                - link "Profile & State" [ref=e138] [cursor=pointer]:
+                  - /url: /mcp/configuration/user-profile
+                  - generic "Profile & State" [ref=e139]
+              - listitem [ref=e140]:
+                - link "Connecting to Browsers" [ref=e141] [cursor=pointer]:
+                  - /url: /mcp/configuration/browser-extension
+                  - generic "Connecting to Browsers" [ref=e142]
+          - listitem [ref=e143]:
+            - link "Configuration" [ref=e144] [cursor=pointer]:
+              - /url: /mcp/configuration/options
+              - generic "Configuration" [ref=e145]
+    - main [ref=e146]:
+      - generic [ref=e148]:
+        - generic [ref=e150]:
+          - article [ref=e151]:
+            - navigation "Breadcrumbs" [ref=e152]:
+              - list [ref=e153]:
+                - listitem [ref=e154]:
+                  - link "Home page" [ref=e155] [cursor=pointer]:
+                    - /url: /
+                    - img [ref=e156]
+                - listitem [ref=e158]:
+                  - generic [ref=e159]: Introduction
+            - generic [ref=e160]:
+              - heading "Playwright MCP" [level=1] [ref=e162]
+              - paragraph [ref=e163]:
+                - text: A
+                - link "Model Context Protocol" [ref=e164] [cursor=pointer]:
+                  - /url: https://modelcontextprotocol.io
+                - text: server that provides browser automation capabilities using Playwright. Enables LLMs to interact with web pages through structured accessibility snapshots — no vision models required.
+              - heading "ExampleDirect link to Example" [level=2] [ref=e165]:
+                - text: Example
+                - link "Direct link to Example" [ref=e166] [cursor=pointer]:
+                  - /url: "#example"
+                  - text: "#"
+              - code [ref=e170]:
+                - generic [ref=e171]: "You: Navigate to https://demo.playwright.dev/todomvc and add \"Buy groceries\"."
+                - generic [ref=e173]: "→ browser_navigate { url: \"https://demo.playwright.dev/todomvc\" }"
+                - generic [ref=e174]: → browser_snapshot
+                - generic [ref=e176]: "- heading \"todos\" [level=1]"
+                - generic [ref=e177]: "- textbox \"What needs to be done?\" [ref=e5]"
+                - generic [ref=e179]: "→ browser_type { ref: \"e5\", text: \"Buy groceries\", submit: true }"
+                - generic [ref=e180]: → browser_snapshot
+                - generic [ref=e182]: "- heading \"todos\" [level=1]"
+                - generic [ref=e183]: "- textbox \"What needs to be done?\" [ref=e5]"
+                - generic [ref=e184]: "- listitem:"
+                - generic [ref=e185]: "- checkbox \"Toggle Todo\" [ref=e10]"
+                - generic [ref=e186]: "- text: \"Buy groceries\""
+                - generic [ref=e187]: "- contentinfo:"
+                - generic [ref=e188]: "- text: \"1 item left\""
+              - paragraph [ref=e189]:
+                - text: The LLM reads the accessibility snapshot, finds element refs like
+                - code [ref=e190]: e5
+                - text: ", and uses them to interact — clicking buttons, filling forms, checking checkboxes. No screenshots or coordinate guessing needed."
+              - heading "Key FeaturesDirect link to Key Features" [level=2] [ref=e191]:
+                - text: Key Features
+                - link "Direct link to Key Features" [ref=e192] [cursor=pointer]:
+                  - /url: "#key-features"
+                  - text: "#"
+              - list [ref=e193]:
+                - listitem [ref=e194]:
+                  - strong [ref=e195]: Snapshot-based
+                  - text: — operates on the accessibility tree, not pixels. Each interactive element gets a unique ref for deterministic interaction
+                - listitem [ref=e196]:
+                  - strong [ref=e197]: LLM-friendly
+                  - text: — structured text output that LLMs parse naturally, ~200-400 tokens per snapshot vs thousands for DOM/screenshots
+                - listitem [ref=e198]:
+                  - strong [ref=e199]: Cross-browser
+                  - text: — Chrome, Firefox, WebKit, and Edge support
+                - listitem [ref=e200]:
+                  - strong [ref=e201]: Full automation
+                  - text: — 40+ tools covering navigation, forms, network mocking, storage, tracing, video, and more
+                - listitem [ref=e202]:
+                  - strong [ref=e203]: Persistent sessions
+                  - text: — login state and cookies preserved between sessions by default
+                - listitem [ref=e204]:
+                  - strong [ref=e205]: Works everywhere
+                  - text: — VS Code, Cursor, Windsurf, Claude Code, Claude Desktop, and any MCP client
+              - heading "Quick StartDirect link to Quick Start" [level=2] [ref=e206]:
+                - text: Quick Start
+                - link "Direct link to Quick Start" [ref=e207] [cursor=pointer]:
+                  - /url: "#quick-start"
+                  - text: "#"
+              - paragraph [ref=e208]: "Add the server to your MCP client:"
+              - code [ref=e212]:
+                - generic [ref=e213]: "{"
+                - generic [ref=e214]: "\"mcpServers\": {"
+                - generic [ref=e215]: "\"playwright\": {"
+                - generic [ref=e216]: "\"command\": \"npx\","
+                - generic [ref=e217]: "\"args\": [\"@playwright/mcp@latest\"]"
+                - generic [ref=e218]: "}"
+                - generic [ref=e219]: "}"
+                - generic [ref=e220]: "}"
+              - paragraph [ref=e221]:
+                - text: The browser opens in
+                - strong [ref=e222]: headed mode
+                - text: by default so you can see what's happening. See
+                - link "Installation" [ref=e223] [cursor=pointer]:
+                  - /url: /mcp/installation
+                - text: for client-specific setup.
+              - heading "Playwright MCP vs Playwright CLIDirect link to Playwright MCP vs Playwright CLI" [level=2] [ref=e224]:
+                - text: Playwright MCP vs Playwright CLI
+                - link "Direct link to Playwright MCP vs Playwright CLI" [ref=e225] [cursor=pointer]:
+                  - /url: "#playwright-mcp-vs-playwright-cli"
+                  - text: "#"
+              - table [ref=e226]:
+                - rowgroup [ref=e227]:
+                  - row "MCP Playwright CLI" [ref=e228]:
+                    - columnheader [ref=e229]
+                    - columnheader "MCP" [ref=e230]:
+                      - strong [ref=e231]: MCP
+                    - columnheader "Playwright CLI" [ref=e232]:
+                      - strong [ref=e233]:
+                        - link "Playwright CLI" [ref=e234] [cursor=pointer]:
+                          - /url: /agent-cli/introduction
+                - rowgroup [ref=e235]:
+                  - row "Best for Specialized agentic loops, exploratory automation Coding agents (Claude Code, Copilot) working with large codebases" [ref=e236]:
+                    - cell "Best for" [ref=e237]:
+                      - strong [ref=e238]: Best for
+                    - cell "Specialized agentic loops, exploratory automation" [ref=e239]
+                    - cell "Coding agents (Claude Code, Copilot) working with large codebases" [ref=e240]
+                  - row "How it works LLM calls MCP tools with structured parameters Agent runs shell commands" [ref=e241]:
+                    - cell "How it works" [ref=e242]:
+                      - strong [ref=e243]: How it works
+                    - cell "LLM calls MCP tools with structured parameters" [ref=e244]
+                    - cell "Agent runs shell commands" [ref=e245]
+                  - row "Token cost Higher — tool schemas + snapshots in context Lower — concise CLI output, skills loaded on demand" [ref=e246]:
+                    - cell "Token cost" [ref=e247]:
+                      - strong [ref=e248]: Token cost
+                    - cell "Higher — tool schemas + snapshots in context" [ref=e249]
+                    - cell "Lower — concise CLI output, skills loaded on demand" [ref=e250]
+                  - row "Default mode Headed Headless" [ref=e251]:
+                    - cell "Default mode" [ref=e252]:
+                      - strong [ref=e253]: Default mode
+                    - cell "Headed" [ref=e254]
+                    - cell "Headless" [ref=e255]
+                  - row "Setup JSON config in MCP client npm install -g @playwright/cli" [ref=e256]:
+                    - cell "Setup" [ref=e257]:
+                      - strong [ref=e258]: Setup
+                    - cell "JSON config in MCP client" [ref=e259]
+                    - cell "npm install -g @playwright/cli" [ref=e260]:
+                      - code [ref=e261]: npm install -g @playwright/cli
+              - heading "Available ToolsDirect link to Available Tools" [level=2] [ref=e262]:
+                - text: Available Tools
+                - link "Direct link to Available Tools" [ref=e263] [cursor=pointer]:
+                  - /url: "#available-tools"
+                  - text: "#"
+              - heading "CoreDirect link to Core" [level=3] [ref=e264]:
+                - text: Core
+                - link "Direct link to Core" [ref=e265] [cursor=pointer]:
+                  - /url: "#core"
+                  - text: "#"
+              - table [ref=e266]:
+                - rowgroup [ref=e267]:
+                  - row "Tool Description" [ref=e268]:
+                    - columnheader "Tool" [ref=e269]
+                    - columnheader "Description" [ref=e270]
+                - rowgroup [ref=e271]:
+                  - row "browser_navigate Navigate to a URL" [ref=e272]:
+                    - cell "browser_navigate" [ref=e273]:
+                      - code [ref=e274]: browser_navigate
+                    - cell "Navigate to a URL" [ref=e275]
+                  - row "browser_navigate_back Go back in history" [ref=e276]:
+                    - cell "browser_navigate_back" [ref=e277]:
+                      - code [ref=e278]: browser_navigate_back
+                    - cell "Go back in history" [ref=e279]
+                  - row "browser_navigate_forward Go forward in history" [ref=e280]:
+                    - cell "browser_navigate_forward" [ref=e281]:
+                      - code [ref=e282]: browser_navigate_forward
+                    - cell "Go forward in history" [ref=e283]
+                  - row "browser_reload Reload the page" [ref=e284]:
+                    - cell "browser_reload" [ref=e285]:
+                      - code [ref=e286]: browser_reload
+                    - cell "Reload the page" [ref=e287]
+                  - row "browser_snapshot Capture accessibility snapshot" [ref=e288]:
+                    - cell "browser_snapshot" [ref=e289]:
+                      - code [ref=e290]: browser_snapshot
+                    - cell "Capture accessibility snapshot" [ref=e291]
+                  - row "browser_click Click an element by ref" [ref=e292]:
+                    - cell "browser_click" [ref=e293]:
+                      - code [ref=e294]: browser_click
+                    - cell "Click an element by ref" [ref=e295]
+                  - row "browser_hover Hover over an element" [ref=e296]:
+                    - cell "browser_hover" [ref=e297]:
+                      - code [ref=e298]: browser_hover
+                    - cell "Hover over an element" [ref=e299]
+                  - row "browser_drag Drag and drop between elements" [ref=e300]:
+                    - cell "browser_drag" [ref=e301]:
+                      - code [ref=e302]: browser_drag
+                    - cell "Drag and drop between elements" [ref=e303]
+                  - row "browser_type Type text into an element" [ref=e304]:
+                    - cell "browser_type" [ref=e305]:
+                      - code [ref=e306]: browser_type
+                    - cell "Type text into an element" [ref=e307]
+                  - row "browser_fill_form Fill multiple form fields at once" [ref=e308]:
+                    - cell "browser_fill_form" [ref=e309]:
+                      - code [ref=e310]: browser_fill_form
+                    - cell "Fill multiple form fields at once" [ref=e311]
+                  - row "browser_select_option Select dropdown option" [ref=e312]:
+                    - cell "browser_select_option" [ref=e313]:
+                      - code [ref=e314]: browser_select_option
+                    - cell "Select dropdown option" [ref=e315]
+                  - row "browser_check Check a checkbox or radio" [ref=e316]:
+                    - cell "browser_check" [ref=e317]:
+                      - code [ref=e318]: browser_check
+                    - cell "Check a checkbox or radio" [ref=e319]
+                  - row "browser_uncheck Uncheck a checkbox" [ref=e320]:
+                    - cell "browser_uncheck" [ref=e321]:
+                      - code [ref=e322]: browser_uncheck
+                    - cell "Uncheck a checkbox" [ref=e323]
+                  - row "browser_press_key Press a key (Enter, Tab, etc.)" [ref=e324]:
+                    - cell "browser_press_key" [ref=e325]:
+                      - code [ref=e326]: browser_press_key
+                    - cell "Press a key (Enter, Tab, etc.)" [ref=e327]
+                  - row "browser_take_screenshot Take a PNG/JPEG screenshot" [ref=e328]:
+                    - cell "browser_take_screenshot" [ref=e329]:
+                      - code [ref=e330]: browser_take_screenshot
+                    - cell "Take a PNG/JPEG screenshot" [ref=e331]
+                  - row "browser_tabs List, create, close, switch tabs" [ref=e332]:
+                    - cell "browser_tabs" [ref=e333]:
+                      - code [ref=e334]: browser_tabs
+                    - cell "List, create, close, switch tabs" [ref=e335]
+                  - row "browser_handle_dialog Accept or dismiss dialogs" [ref=e336]:
+                    - cell "browser_handle_dialog" [ref=e337]:
+                      - code [ref=e338]: browser_handle_dialog
+                    - cell "Accept or dismiss dialogs" [ref=e339]
+                  - row "browser_file_upload Upload files" [ref=e340]:
+                    - cell "browser_file_upload" [ref=e341]:
+                      - code [ref=e342]: browser_file_upload
+                    - cell "Upload files" [ref=e343]
+                  - row "browser_close Close the browser" [ref=e344]:
+                    - cell "browser_close" [ref=e345]:
+                      - code [ref=e346]: browser_close
+                    - cell "Close the browser" [ref=e347]
+                  - row "browser_resize Resize the browser window" [ref=e348]:
+                    - cell "browser_resize" [ref=e349]:
+                      - code [ref=e350]: browser_resize
+                    - cell "Resize the browser window" [ref=e351]
+                  - row "browser_wait_for Wait for text, element, or time" [ref=e352]:
+                    - cell "browser_wait_for" [ref=e353]:
+                      - code [ref=e354]: browser_wait_for
+                    - cell "Wait for text, element, or time" [ref=e355]
+              - heading "Network & StorageDirect link to Network & Storage" [level=3] [ref=e356]:
+                - text: Network & Storage
+                - link "Direct link to Network & Storage" [ref=e357] [cursor=pointer]:
+                  - /url: "#network--storage"
+                  - text: "#"
+              - table [ref=e358]:
+                - rowgroup [ref=e359]:
+                  - row "Tool Description" [ref=e360]:
+                    - columnheader "Tool" [ref=e361]
+                    - columnheader "Description" [ref=e362]
+                - rowgroup [ref=e363]:
+                  - row "browser_network_requests List network requests" [ref=e364]:
+                    - cell "browser_network_requests" [ref=e365]:
+                      - code [ref=e366]: browser_network_requests
+                    - cell "List network requests" [ref=e367]
+                  - row "browser_route Mock network requests" [ref=e368]:
+                    - cell "browser_route" [ref=e369]:
+                      - code [ref=e370]: browser_route
+                    - cell "Mock network requests" [ref=e371]
+                  - row "browser_route_list List active mocked routes" [ref=e372]:
+                    - cell "browser_route_list" [ref=e373]:
+                      - code [ref=e374]: browser_route_list
+                    - cell "List active mocked routes" [ref=e375]
+                  - row "browser_unroute Remove mocked routes" [ref=e376]:
+                    - cell "browser_unroute" [ref=e377]:
+                      - code [ref=e378]: browser_unroute
+                    - cell "Remove mocked routes" [ref=e379]
+                  - row "browser_cookie_list/get/set/delete/clear Manage cookies" [ref=e380]:
+                    - cell "browser_cookie_list/get/set/delete/clear" [ref=e381]:
+                      - code [ref=e382]: browser_cookie_list/get/set/delete/clear
+                    - cell "Manage cookies" [ref=e383]
+                  - row "browser_localstorage_list/get/set/delete/clear Manage localStorage" [ref=e384]:
+                    - cell "browser_localstorage_list/get/set/delete/clear" [ref=e385]:
+                      - code [ref=e386]: browser_localstorage_list/get/set/delete/clear
+                    - cell "Manage localStorage" [ref=e387]
+                  - row "browser_storage_state Save cookies + localStorage to file" [ref=e388]:
+                    - cell "browser_storage_state" [ref=e389]:
+                      - code [ref=e390]: browser_storage_state
+                    - cell "Save cookies + localStorage to file" [ref=e391]
+                  - row "browser_set_storage_state Restore saved state" [ref=e392]:
+                    - cell "browser_set_storage_state" [ref=e393]:
+                      - code [ref=e394]: browser_set_storage_state
+                    - cell "Restore saved state" [ref=e395]
+              - heading "Testing & DebuggingDirect link to Testing & Debugging" [level=3] [ref=e396]:
+                - text: Testing & Debugging
+                - link "Direct link to Testing & Debugging" [ref=e397] [cursor=pointer]:
+                  - /url: "#testing--debugging"
+                  - text: "#"
+              - table [ref=e398]:
+                - rowgroup [ref=e399]:
+                  - row "Tool Description" [ref=e400]:
+                    - columnheader "Tool" [ref=e401]
+                    - columnheader "Description" [ref=e402]
+                - rowgroup [ref=e403]:
+                  - row "browser_run_code Execute Playwright code snippets" [ref=e404]:
+                    - cell "browser_run_code" [ref=e405]:
+                      - code [ref=e406]: browser_run_code
+                    - cell "Execute Playwright code snippets" [ref=e407]
+                  - row "browser_evaluate Evaluate JavaScript on the page" [ref=e408]:
+                    - cell "browser_evaluate" [ref=e409]:
+                      - code [ref=e410]: browser_evaluate
+                    - cell "Evaluate JavaScript on the page" [ref=e411]
+                  - row "browser_console_messages Get console output" [ref=e412]:
+                    - cell "browser_console_messages" [ref=e413]:
+                      - code [ref=e414]: browser_console_messages
+                    - cell "Get console output" [ref=e415]
+                  - row "browser_generate_locator Generate Playwright locator for tests" [ref=e416]:
+                    - cell "browser_generate_locator" [ref=e417]:
+                      - code [ref=e418]: browser_generate_locator
+                    - cell "Generate Playwright locator for tests" [ref=e419]
+                  - row "browser_verify_element_visible Assert element is visible" [ref=e420]:
+                    - cell "browser_verify_element_visible" [ref=e421]:
+                      - code [ref=e422]: browser_verify_element_visible
+                    - cell "Assert element is visible" [ref=e423]
+                  - row "browser_verify_text_visible Assert text is visible" [ref=e424]:
+                    - cell "browser_verify_text_visible" [ref=e425]:
+                      - code [ref=e426]: browser_verify_text_visible
+                    - cell "Assert text is visible" [ref=e427]
+                  - row "browser_start_tracing / browser_stop_tracing Record execution traces" [ref=e428]:
+                    - cell "browser_start_tracing / browser_stop_tracing" [ref=e429]:
+                      - code [ref=e430]: browser_start_tracing
+                      - text: /
+                      - code [ref=e431]: browser_stop_tracing
+                    - cell "Record execution traces" [ref=e432]
+                  - row "browser_start_video / browser_stop_video Record session video" [ref=e433]:
+                    - cell "browser_start_video / browser_stop_video" [ref=e434]:
+                      - code [ref=e435]: browser_start_video
+                      - text: /
+                      - code [ref=e436]: browser_stop_video
+                    - cell "Record session video" [ref=e437]
+                  - row "browser_pdf_save Export page as PDF" [ref=e438]:
+                    - cell "browser_pdf_save" [ref=e439]:
+                      - code [ref=e440]: browser_pdf_save
+                    - cell "Export page as PDF" [ref=e441]
+              - heading "Vision (optional)Direct link to Vision (optional)" [level=3] [ref=e442]:
+                - text: Vision (optional)
+                - link "Direct link to Vision (optional)" [ref=e443] [cursor=pointer]:
+                  - /url: "#vision-optional"
+                  - text: "#"
+              - table [ref=e444]:
+                - rowgroup [ref=e445]:
+                  - row "Tool Description" [ref=e446]:
+                    - columnheader "Tool" [ref=e447]
+                    - columnheader "Description" [ref=e448]
+                - rowgroup [ref=e449]:
+                  - row "browser_mouse_move_xy Move mouse to coordinates" [ref=e450]:
+                    - cell "browser_mouse_move_xy" [ref=e451]:
+                      - code [ref=e452]: browser_mouse_move_xy
+                    - cell "Move mouse to coordinates" [ref=e453]
+                  - row "browser_mouse_down / browser_mouse_up Mouse button press/release" [ref=e454]:
+                    - cell "browser_mouse_down / browser_mouse_up" [ref=e455]:
+                      - code [ref=e456]: browser_mouse_down
+                      - text: /
+                      - code [ref=e457]: browser_mouse_up
+                    - cell "Mouse button press/release" [ref=e458]
+                  - row "browser_mouse_wheel Scroll with mouse wheel" [ref=e459]:
+                    - cell "browser_mouse_wheel" [ref=e460]:
+                      - code [ref=e461]: browser_mouse_wheel
+                    - cell "Scroll with mouse wheel" [ref=e462]
+          - navigation "Docs pages" [ref=e463]:
+            - link "Next Installation »" [ref=e464] [cursor=pointer]:
+              - /url: /mcp/installation
+              - generic [ref=e465]: Next
+              - generic [ref=e466]: Installation »
+        - list [ref=e469]:
+          - listitem [ref=e470]:
+            - link "Example" [ref=e471] [cursor=pointer]:
+              - /url: "#example"
+          - listitem [ref=e472]:
+            - link "Key Features" [ref=e473] [cursor=pointer]:
+              - /url: "#key-features"
+          - listitem [ref=e474]:
+            - link "Quick Start" [ref=e475] [cursor=pointer]:
+              - /url: "#quick-start"
+          - listitem [ref=e476]:
+            - link "Playwright MCP vs Playwright CLI" [ref=e477] [cursor=pointer]:
+              - /url: "#playwright-mcp-vs-playwright-cli"
+          - listitem [ref=e478]:
+            - link "Available Tools" [ref=e479] [cursor=pointer]:
+              - /url: "#available-tools"
+            - list [ref=e480]:
+              - listitem [ref=e481]:
+                - link "Core" [ref=e482] [cursor=pointer]:
+                  - /url: "#core"
+              - listitem [ref=e483]:
+                - link "Network & Storage" [ref=e484] [cursor=pointer]:
+                  - /url: "#network--storage"
+              - listitem [ref=e485]:
+                - link "Testing & Debugging" [ref=e486] [cursor=pointer]:
+                  - /url: "#testing--debugging"
+              - listitem [ref=e487]:
+                - link "Vision (optional)" [ref=e488] [cursor=pointer]:
+                  - /url: "#vision-optional"
+  - contentinfo [ref=e489]:
+    - generic [ref=e490]:
+      - generic [ref=e491]:
+        - generic [ref=e492]:
+          - generic [ref=e493]: Learn
+          - list [ref=e494]:
+            - listitem [ref=e495]:
+              - link "Getting started" [ref=e496] [cursor=pointer]:
+                - /url: /docs/intro
+            - listitem [ref=e497]:
+              - link "Playwright Training(opens in new tab)" [ref=e498] [cursor=pointer]:
+                - /url: https://learn.microsoft.com/en-us/training/modules/build-with-playwright/
+                - text: Playwright Training
+                - img "(opens in new tab)" [ref=e499]
+            - listitem [ref=e501]:
+              - link "Learn Videos" [ref=e502] [cursor=pointer]:
+                - /url: /community/learn-videos
+            - listitem [ref=e503]:
+              - link "Feature Videos" [ref=e504] [cursor=pointer]:
+                - /url: /community/feature-videos
+        - generic [ref=e505]:
+          - generic [ref=e506]: Community
+          - list [ref=e507]:
+            - listitem [ref=e508]:
+              - link "Stack Overflow(opens in new tab)" [ref=e509] [cursor=pointer]:
+                - /url: https://stackoverflow.com/questions/tagged/playwright
+                - text: Stack Overflow
+                - img "(opens in new tab)" [ref=e510]
+            - listitem [ref=e512]:
+              - link "Discord(opens in new tab)" [ref=e513] [cursor=pointer]:
+                - /url: https://aka.ms/playwright/discord
+                - text: Discord
+                - img "(opens in new tab)" [ref=e514]
+            - listitem [ref=e516]:
+              - link "Twitter(opens in new tab)" [ref=e517] [cursor=pointer]:
+                - /url: https://twitter.com/playwrightweb
+                - text: Twitter
+                - img "(opens in new tab)" [ref=e518]
+            - listitem [ref=e520]:
+              - link "LinkedIn(opens in new tab)" [ref=e521] [cursor=pointer]:
+                - /url: https://www.linkedin.com/company/playwrightweb
+                - text: LinkedIn
+                - img "(opens in new tab)" [ref=e522]
+        - generic [ref=e524]:
+          - generic [ref=e525]: More
+          - list [ref=e526]:
+            - listitem [ref=e527]:
+              - link "GitHub(opens in new tab)" [ref=e528] [cursor=pointer]:
+                - /url: https://github.com/microsoft/playwright
+                - text: GitHub
+                - img "(opens in new tab)" [ref=e529]
+            - listitem [ref=e531]:
+              - link "YouTube(opens in new tab)" [ref=e532] [cursor=pointer]:
+                - /url: https://www.youtube.com/channel/UC46Zj8pDH5tDosqm1gd7WTg
+                - text: YouTube
+                - img "(opens in new tab)" [ref=e533]
+            - listitem [ref=e535]:
+              - link "Blog(opens in new tab)" [ref=e536] [cursor=pointer]:
+                - /url: https://dev.to/playwright
+                - text: Blog
+                - img "(opens in new tab)" [ref=e537]
+            - listitem [ref=e539]:
+              - link "Ambassadors" [ref=e540] [cursor=pointer]:
+                - /url: /community/ambassadors
+            - listitem [ref=e541]:
+              - link "Microsoft Privacy Statement(opens in new tab)" [ref=e542] [cursor=pointer]:
+                - /url: https://go.microsoft.com/fwlink/?LinkId=521839
+                - text: Microsoft Privacy Statement
+                - img "(opens in new tab)" [ref=e543]
+      - generic [ref=e546]: Copyright © 2026 Microsoft

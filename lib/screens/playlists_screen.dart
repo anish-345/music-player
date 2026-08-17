@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/music_provider.dart';
 import '../constants/app_theme.dart';
+import '../widgets/banner_ad_tile.dart';
+import '../services/ad_service.dart';
 import 'playlist_detail_screen.dart';
 
 class PlaylistsScreen extends StatelessWidget {
@@ -54,6 +56,10 @@ class PlaylistsScreen extends StatelessWidget {
                       );
                     }
 
+                    const int adInterval = 10;
+                    int totalCount = playlists.length +
+                        (playlists.length / adInterval).floor();
+
                     return ListView.builder(
                       padding: EdgeInsets.only(
                         left: 16,
@@ -61,9 +67,18 @@ class PlaylistsScreen extends StatelessWidget {
                         top: 16,
                         bottom: 16 + MediaQuery.of(context).padding.bottom,
                       ),
-                      itemCount: playlists.length,
+                      itemCount: totalCount,
                       itemBuilder: (context, index) {
-                        final playlist = playlists[index];
+                        if (index > 0 && (index + 1) % (adInterval + 1) == 0) {
+                          return const BannerAdTile();
+                        }
+
+                        int playlistIndex = index - (index ~/ (adInterval + 1));
+                        if (playlistIndex >= playlists.length) {
+                          return const SizedBox.shrink();
+                        }
+
+                        final playlist = playlists[playlistIndex];
                         final songCount = playlist.songIds.length;
 
                         return Container(
@@ -156,12 +171,20 @@ class PlaylistsScreen extends StatelessWidget {
                               ],
                             ),
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      PlaylistDetailScreen(playlist: playlist),
-                                ),
+                              // Show ad on screen change (if ready), then navigate
+                              AdService().showRewardedInterstitialAd(
+                                onDismissed: () {
+                                  if (context.mounted) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            PlaylistDetailScreen(
+                                                playlist: playlist),
+                                      ),
+                                    );
+                                  }
+                                },
                               );
                             },
                             onLongPress: () {
@@ -223,13 +246,14 @@ class PlaylistsScreen extends StatelessWidget {
     final controller = TextEditingController();
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.surfaceColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         title: const Text('Create Playlist',
             style: TextStyle(color: AppTheme.primaryTextColor)),
         content: TextField(
           controller: controller,
+          autofocus: true,
           style: const TextStyle(color: AppTheme.primaryTextColor),
           decoration: InputDecoration(
             hintText: 'Playlist name',
@@ -247,20 +271,24 @@ class PlaylistsScreen extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(ctx),
             child: const Text('Cancel',
                 style: TextStyle(color: AppTheme.secondaryTextColor)),
           ),
           TextButton(
             onPressed: () {
-              if (controller.text.isNotEmpty) {
+              final name = controller.text.trim();
+              if (name.isNotEmpty) {
+                // Create playlist immediately — never gate on ads
                 Provider.of<MusicProvider>(context, listen: false)
-                    .createPlaylist(controller.text);
-                Navigator.pop(context);
+                    .createPlaylist(name);
+                Navigator.pop(ctx);
               }
             },
             child: const Text('Create',
-                style: TextStyle(color: AppTheme.primaryTextColor)),
+                style: TextStyle(
+                    color: AppTheme.primaryTextColor,
+                    fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -271,7 +299,7 @@ class PlaylistsScreen extends StatelessWidget {
       BuildContext context, MusicProvider provider, String playlistId) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (ctx) => AlertDialog(
         backgroundColor: AppTheme.surfaceColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         title: const Text('Delete Playlist',
@@ -280,14 +308,15 @@ class PlaylistsScreen extends StatelessWidget {
             style: TextStyle(color: AppTheme.secondaryTextColor)),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(ctx),
             child: const Text('Cancel',
                 style: TextStyle(color: AppTheme.secondaryTextColor)),
           ),
           TextButton(
             onPressed: () {
+              // Delete immediately — never gate on ads
               provider.deletePlaylist(playlistId);
-              Navigator.pop(context);
+              Navigator.pop(ctx);
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),

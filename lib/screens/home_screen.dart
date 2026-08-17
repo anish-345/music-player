@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/music_provider.dart';
 import '../widgets/song_list_item.dart';
 import '../widgets/mini_player.dart';
+import '../widgets/banner_ad_tile.dart';
 import '../services/permission_service.dart';
 import '../constants/app_theme.dart';
 import 'playlists_screen.dart';
@@ -43,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  static const platform = MethodChannel('com.example.myapp/background');
+  static const platform = MethodChannel('avionti.music_player/background');
 
   Future<void> _moveToBackground() async {
     try {
@@ -118,13 +119,27 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       }
 
+                      const int adInterval = 10;
+                      int totalCount = musicProvider.songs.length +
+                          (musicProvider.songs.length / adInterval).floor();
+
                       return ListView.builder(
                         padding: EdgeInsets.only(
                           bottom: 80 + MediaQuery.of(context).padding.bottom,
                         ),
-                        itemCount: musicProvider.songs.length,
+                        itemCount: totalCount,
                         itemBuilder: (context, index) {
-                          return SongListItem(song: musicProvider.songs[index]);
+                          if (index > 0 &&
+                              (index + 1) % (adInterval + 1) == 0) {
+                            return const BannerAdTile();
+                          }
+
+                          int songIndex = index - (index ~/ (adInterval + 1));
+                          if (songIndex >= musicProvider.songs.length) {
+                            return const SizedBox.shrink();
+                          }
+                          return SongListItem(
+                              song: musicProvider.songs[songIndex]);
                         },
                       );
                     },

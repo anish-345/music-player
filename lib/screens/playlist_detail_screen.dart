@@ -4,6 +4,7 @@ import '../models/playlist.dart';
 import '../providers/music_provider.dart';
 import '../constants/app_theme.dart';
 import '../widgets/playlist_song_item.dart';
+import '../widgets/banner_ad_tile.dart';
 
 class PlaylistDetailScreen extends StatelessWidget {
   final Playlist playlist;
@@ -77,6 +78,10 @@ class PlaylistDetailScreen extends StatelessWidget {
                       );
                     }
 
+                    const int adInterval = 10;
+                    final int totalCount =
+                        songs.length + (songs.length / adInterval).floor();
+
                     return ListView.builder(
                       padding: EdgeInsets.only(
                         left: 16,
@@ -84,10 +89,19 @@ class PlaylistDetailScreen extends StatelessWidget {
                         top: 16,
                         bottom: 16 + MediaQuery.of(context).padding.bottom,
                       ),
-                      itemCount: songs.length,
+                      itemCount: totalCount,
                       itemBuilder: (context, index) {
+                        if (index > 0 && (index + 1) % (adInterval + 1) == 0) {
+                          return const BannerAdTile();
+                        }
+
+                        int songIndex = index - (index ~/ (adInterval + 1));
+                        if (songIndex >= songs.length) {
+                          return const SizedBox.shrink();
+                        }
+
                         return PlaylistSongItem(
-                          song: songs[index],
+                          song: songs[songIndex],
                           playlistId: playlist.id,
                         );
                       },
@@ -303,9 +317,8 @@ class _MultiSelectSongsDialogState extends State<_MultiSelectSongsDialog> {
   void _addSelectedSongs() async {
     await widget.musicProvider
         .addSongsToPlaylist(widget.playlistId, _selectedSongIds.toList());
-    if (context.mounted) {
-      Navigator.pop(context);
-    }
+    if (!mounted) return;
+    Navigator.pop(context);
   }
 
   @override

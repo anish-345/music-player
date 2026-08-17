@@ -5,6 +5,7 @@ import '../models/playlist.dart';
 import '../services/audio_handler.dart';
 import '../services/song_service.dart';
 import '../services/playlist_service.dart';
+import '../services/playback_persistence_service.dart';
 
 export 'package:just_audio/just_audio.dart' show LoopMode;
 
@@ -12,12 +13,15 @@ class MusicProvider extends ChangeNotifier {
   final MusicAudioHandler _audioHandler;
   final SongService _songService = SongService();
   final PlaylistService _playlistService = PlaylistService();
+  final PlaybackPersistenceService _persistenceService =
+      PlaybackPersistenceService();
 
   List<Song> _songs = [];
   List<Song> _filteredSongs = [];
   List<Playlist> _playlists = [];
   bool _isLoading = false;
   String _searchQuery = '';
+  bool _isRestoring = false;
 
   List<Song> get songs => _searchQuery.isEmpty ? _songs : _filteredSongs;
   List<Playlist> get playlists => _playlists;
@@ -34,10 +38,83 @@ class MusicProvider extends ChangeNotifier {
     // Only notify on actual state changes (playing/paused/stopped)
     _audioHandler.audioPlayer.playerStateStream.distinct().listen((_) {
       notifyListeners();
+      _saveCurrentState();
     });
 
-    // Don't listen to position stream here - let widgets that need it subscribe directly
-    // This reduces unnecessary rebuilds across the entire app
+    // Listen for queue changes
+    _audioHandler.queue.listen((_) {
+      _saveCurrentState();
+    });
+
+    // Listen for position changes periodically to save position (every 5 seconds)
+    _audioHandler.audioPlayer.positionStream.listen((position) {
+      if (position.inSeconds % 5 == 0) {
+        _saveCurrentState();
+      }
+    });
+  }
+
+  void _saveCurrentState() {
+    if (_isRestoring) return;
+
+    _persistenceService.savePlaybackState(
+      currentSongId: currentSong?.id,
+      queueIds: queue.map((s) => s.id).toList(),
+      positionMs: _audioHandler.audioPlayer.position.inMilliseconds,
+      isShuffled: isShuffled,
+      loopMode: loopMode.toString().split('.').last,
+    );
+  }
+
+  Future<void> restorePlaybackState() async {
+    _isRestoring = true;
+    try {
+      final state = await _persistenceService.loadPlaybackState();
+      final List<String> queueIds = state['queueIds'];
+      final String? currentSongId = state['currentSongId'];
+      final int positionMs = state['positionMs'];
+      final bool savedIsShuffled = state['isShuffled'];
+      final String savedLoopMode = state['loopMode'];
+
+      if (queueIds.isNotEmpty) {
+        final List<Song> restoredQueue = [];
+        for (var id in queueIds) {
+          final song = _songs.where((s) => s.id == id).firstOrNull;
+          if (song != null) {
+            restoredQueue.add(song);
+          }
+        }
+
+        if (restoredQueue.isNotEmpty) {
+          Song? songToPlay;
+          if (currentSongId != null) {
+            songToPlay =
+                restoredQueue.where((s) => s.id == currentSongId).firstOrNull;
+          }
+          songToPlay ??= restoredQueue[0];
+
+          await _audioHandler.playSongFromQueue(songToPlay,
+              newQueue: restoredQueue, shouldPlay: false);
+          await _audioHandler.seek(Duration(milliseconds: positionMs));
+
+          // Restore shuffle/loop modes
+          if (savedIsShuffled != _audioHandler.isShuffled) {
+            _audioHandler.toggleShuffle();
+          }
+
+          // Restore loop mode
+          while (_audioHandler.loopMode.toString().split('.').last !=
+              savedLoopMode) {
+            _audioHandler.toggleRepeatMode();
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Error restoring playback state: $e');
+    } finally {
+      _isRestoring = false;
+      notifyListeners();
+    }
   }
 
   void searchSongs(String query) {
@@ -62,6 +139,9 @@ class MusicProvider extends ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+
+    // Restore playback state after songs are loaded
+    await restorePlaybackState();
   }
 
   Future<void> createPlaylist(String name) async {

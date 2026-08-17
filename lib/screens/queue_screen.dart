@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/music_provider.dart';
 import '../constants/app_theme.dart';
+import '../widgets/banner_ad_tile.dart';
 
 class QueueScreen extends StatelessWidget {
   const QueueScreen({super.key});
@@ -76,6 +77,10 @@ class QueueScreen extends StatelessWidget {
                                 )
                               : AppTheme.card3DDecoration,
                           child: ListTile(
+                            onTap: () {
+                              musicProvider.playSong(song,
+                                  customQueue: musicProvider.queue);
+                            },
                             leading: Container(
                               width: 50,
                               height: 50,
@@ -134,6 +139,7 @@ class QueueScreen extends StatelessWidget {
                   },
                 ),
               ),
+              const BannerAdTile(),
             ],
           ),
         ),

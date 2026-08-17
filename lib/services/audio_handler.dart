@@ -56,11 +56,11 @@ class MusicAudioHandler extends BaseAudioHandler {
         state.playing ? MediaControl.pause : MediaControl.play,
         MediaControl.skipToNext,
         // Shuffle control
-        MediaControl(
+        const MediaControl(
           androidIcon: 'drawable/ic_shuffle',
           label: 'Shuffle',
           action: MediaAction.custom,
-          customAction: const CustomMediaAction(name: 'shuffle'),
+          customAction: CustomMediaAction(name: 'shuffle'),
         ),
         // Repeat control
         MediaControl(
@@ -107,10 +107,11 @@ class MusicAudioHandler extends BaseAudioHandler {
   bool get isShuffled => _isShuffled;
   LoopMode get loopMode => _loopMode;
 
-  Future<void> playSongFromQueue(Song song, {List<Song>? newQueue}) async {
+  Future<void> playSongFromQueue(Song song,
+      {List<Song>? newQueue, bool shouldPlay = true}) async {
     try {
       if (newQueue != null) {
-        _songQueue = newQueue;
+        _songQueue = List<Song>.from(newQueue);
         _currentIndex = _songQueue.indexOf(song);
 
         final mediaItems = _songQueue
@@ -120,11 +121,13 @@ class MusicAudioHandler extends BaseAudioHandler {
                   artist: s.artist,
                   duration: Duration(milliseconds: s.duration),
                   artUri: Uri.parse(
-                      'android.resource://com.example.myapp/mipmap/ic_launcher'),
+                      'android.resource://avionti.music_player/mipmap/ic_launcher'),
                 ))
             .toList();
 
         _queueSubject.add(mediaItems);
+      } else {
+        _currentIndex = _songQueue.indexOf(song);
       }
 
       final currentMediaItem = MediaItem(
@@ -133,7 +136,7 @@ class MusicAudioHandler extends BaseAudioHandler {
         artist: song.artist,
         duration: Duration(milliseconds: song.duration),
         artUri: Uri.parse(
-            'android.resource://com.example.myapp/mipmap/ic_launcher'),
+            'android.resource://avionti.music_player/mipmap/ic_launcher'),
         extras: {
           'hideMediaRoute': true,
         },
@@ -142,10 +145,14 @@ class MusicAudioHandler extends BaseAudioHandler {
       mediaItem.add(currentMediaItem);
 
       await _audioPlayer.setFilePath(song.path);
-      await _audioPlayer.play();
+      if (shouldPlay) {
+        await _audioPlayer.play();
+      }
     } catch (e) {
       // Error playing song - try to skip to next song if available
-      if (_songQueue.length > 1 && _currentIndex < _songQueue.length - 1) {
+      if (shouldPlay &&
+          _songQueue.length > 1 &&
+          _currentIndex < _songQueue.length - 1) {
         await skipToNext();
       }
     }
@@ -207,7 +214,7 @@ class MusicAudioHandler extends BaseAudioHandler {
               artist: s.artist,
               duration: Duration(milliseconds: s.duration),
               artUri: Uri.parse(
-                  'android.resource://com.example.myapp/mipmap/ic_launcher'),
+                  'android.resource://avionti.music_player/mipmap/ic_launcher'),
             ))
         .toList();
     _queueSubject.add(mediaItems);
@@ -222,7 +229,7 @@ class MusicAudioHandler extends BaseAudioHandler {
               artist: s.artist,
               duration: Duration(milliseconds: s.duration),
               artUri: Uri.parse(
-                  'android.resource://com.example.myapp/mipmap/ic_launcher'),
+                  'android.resource://avionti.music_player/mipmap/ic_launcher'),
             ))
         .toList();
     _queueSubject.add(mediaItems);
@@ -241,7 +248,7 @@ class MusicAudioHandler extends BaseAudioHandler {
                 artist: s.artist,
                 duration: Duration(milliseconds: s.duration),
                 artUri: Uri.parse(
-                    'android.resource://com.example.myapp/mipmap/ic_launcher'),
+                    'android.resource://avionti.music_player/mipmap/ic_launcher'),
               ))
           .toList();
       _queueSubject.add(mediaItems);
@@ -275,7 +282,7 @@ class MusicAudioHandler extends BaseAudioHandler {
               artist: s.artist,
               duration: Duration(milliseconds: s.duration),
               artUri: Uri.parse(
-                  'android.resource://com.example.myapp/mipmap/ic_launcher'),
+                  'android.resource://avionti.music_player/mipmap/ic_launcher'),
             ))
         .toList();
     _queueSubject.add(mediaItems);

@@ -5,6 +5,7 @@ import 'package:audio_service/audio_service.dart';
 import 'providers/music_provider.dart';
 import 'screens/home_screen.dart';
 import 'services/audio_handler.dart';
+import 'services/ad_service.dart';
 
 late MusicAudioHandler audioHandler;
 
@@ -30,7 +31,7 @@ void main() async {
   audioHandler = await AudioService.init(
     builder: () => MusicAudioHandler(),
     config: const AudioServiceConfig(
-      androidNotificationChannelId: 'com.example.myapp.channel.audio',
+      androidNotificationChannelId: 'avionti.music_player.channel.audio',
       androidNotificationChannelName: 'Music Playback',
       androidNotificationOngoing: false,
       androidShowNotificationBadge: true,
@@ -40,6 +41,9 @@ void main() async {
       notificationColor: Color(0xFF6A4C93), // Deep purple matching app theme
     ),
   );
+
+  // Initialize AdService
+  await AdService().initialize();
 
   runApp(const MyApp());
 }
@@ -69,7 +73,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     super.didChangeAppLifecycleState(state);
 
     // Only stop playback when app is detached (removed from memory)
-    // Allow background playback when paused or inactive
     if (state == AppLifecycleState.detached) {
       audioHandler.stop();
     }
@@ -77,8 +80,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => MusicProvider(audioHandler),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => MusicProvider(audioHandler)),
+      ],
       child: MaterialApp(
         title: 'Music',
         debugShowCheckedModeBanner: false,

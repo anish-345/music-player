@@ -1,21 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="avionti.music_player">
+
+    <!-- CORE PERMISSIONS - Required for music playback -->
+    <!-- Storage: Read-only access for media files (Android 13+) -->
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+    
+    <!-- Background playback: Keep CPU awake during playback -->
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    
+    <!-- Foreground service: Required for media playback service -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
+    
+    <!-- Notifications: Show playback controls in notification panel -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    
+    <!-- Internet: For ads and optional future features -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- PlayStore recommended: hardware features (outside application) -->
+    <uses-feature
+        android:name="android.hardware.screen.portrait"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
 
     <application
-        android:label="Music"
+        android:label="Qtonz Music"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:requestLegacyExternalStorage="true">
+        android:usesCleartextTraffic="false"
+        android:exported="true"
+        android:enableOnBackInvokedCallback="true">
         <activity
-            android:name=".MainActivity"
+            android:name="avionti.music_player.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
@@ -45,7 +65,15 @@
             </intent-filter>
         </receiver>
         <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-2743584570741087~4604004735"/>
+
+        <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <!-- PlayStore required: app link support -->
+        <meta-data android:name="android.service.chooser" android:value="true" />
+
     </application>
 </manifest>

@@ -4,6 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../models/song.dart';
 import '../providers/music_provider.dart';
 import '../constants/app_theme.dart';
+import '../screens/player_screen.dart';
 
 class SongListItem extends StatelessWidget {
   final Song song;
@@ -22,7 +23,17 @@ class SongListItem extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () => musicProvider.playSong(song),
+          onTap: () async {
+            // Play the song directly - no interstitial for simple song selection
+            await musicProvider.playSong(song);
+            if (!context.mounted) return;
+
+            // Navigate to player screen immediately
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const PlayerScreen()),
+            );
+          },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Row(
@@ -31,10 +42,10 @@ class SongListItem extends StatelessWidget {
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.15),
+                    color: Colors.white.withAlpha(15),
                     borderRadius: BorderRadius.circular(AppTheme.iconRadius),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: Colors.white.withAlpha(20),
                       width: 1,
                     ),
                   ),
@@ -88,7 +99,7 @@ class SongListItem extends StatelessWidget {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.1),
+                      color: Colors.white.withAlpha(10),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -188,7 +199,7 @@ class SongListItem extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: AppTheme.elevated3DShadow,
                           border: Border.all(
-                            color: Colors.red.withValues(alpha: 0.3),
+                            color: Colors.red.withAlpha(30),
                             width: 1.5,
                           ),
                         ),
@@ -221,6 +232,12 @@ class SongListItem extends StatelessWidget {
     final playlists = musicProvider.playlists;
 
     if (playlists.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No playlists yet. Create one first!'),
+          duration: Duration(seconds: 2),
+        ),
+      );
       return;
     }
 
@@ -246,6 +263,12 @@ class SongListItem extends StatelessWidget {
                 onTap: () {
                   musicProvider.addSongToPlaylist(playlist.id, song.id);
                   Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Added to ${playlist.name}'),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
                 },
               );
             },
@@ -281,9 +304,9 @@ class SongListItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Are you sure you want to permanently delete this song from your device?',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.secondaryTextColor,
                 fontSize: 15,
               ),
@@ -292,10 +315,10 @@ class SongListItem extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.05),
+                color: Colors.white.withAlpha(5),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.1),
+                  color: Colors.white.withAlpha(10),
                 ),
               ),
               child: Column(
@@ -354,7 +377,6 @@ class SongListItem extends StatelessWidget {
               onPressed: () async {
                 Navigator.pop(context);
 
-                // Show loading
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -378,10 +400,8 @@ class SongListItem extends StatelessWidget {
                   );
                 }
 
-                // Delete the song
                 final deleted = await musicProvider.deleteSong(song);
 
-                // Show result
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -399,10 +419,7 @@ class SongListItem extends StatelessWidget {
                           : SnackBarAction(
                               label: 'Settings',
                               textColor: Colors.white,
-                              onPressed: () {
-                                // Open app settings
-                                openAppSettings();
-                              },
+                              onPressed: () => openAppSettings(),
                             ),
                     ),
                   );

@@ -35,7 +35,7 @@
 }
 
 # Keep custom model classes
--keep class com.example.myapp.** { *; }
+-keep class avionti.music_player.** { *; }
 
 # Gson (if used)
 -keepattributes Signature

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/music_provider.dart';
 import '../screens/player_screen.dart';
 import '../constants/app_theme.dart';
+import '../services/ad_service.dart';
 
 class MiniPlayer extends StatelessWidget {
   const MiniPlayer({super.key});
@@ -19,9 +20,17 @@ class MiniPlayer extends StatelessWidget {
 
         return GestureDetector(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const PlayerScreen()),
+            // Show Rewarded Interstitial Ad before opening player
+            AdService().showRewardedInterstitialAd(
+              onDismissed: () {
+                if (context.mounted) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const PlayerScreen()),
+                  );
+                }
+              },
             );
           },
           onHorizontalDragEnd: (details) {

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/song.dart';
 import '../providers/music_provider.dart';
 import '../constants/app_theme.dart';
+import '../screens/player_screen.dart';
 
 class PlaylistSongItem extends StatelessWidget {
   final Song song;
@@ -26,7 +27,20 @@ class PlaylistSongItem extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () => musicProvider.playSong(song),
+          onTap: () async {
+            // Play the song directly - no interstitial for simple song selection
+            await musicProvider.playSong(song);
+
+            if (context.mounted) {
+              // Navigate to player screen immediately
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PlayerScreen(),
+                ),
+              );
+            }
+          },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Row(

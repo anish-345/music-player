@@ -61,7 +61,9 @@ class PlayerScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.keyboard_arrow_down,
                 color: Colors.white, size: 32),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
           const Spacer(),
           const Text(
@@ -154,13 +156,11 @@ class PlayerScreen extends StatelessWidget {
           icon: Icons.share,
           onPressed: () async {
             try {
-              // Share the actual audio file with its original filename
+              // Share the actual audio file
               final file = File(song.path);
               if (await file.exists()) {
-                // Get the actual filename from the path
-                final originalFileName = song.path.split('/').last;
                 await Share.shareXFiles(
-                  [XFile(song.path, name: originalFileName)],
+                  [XFile(song.path)],
                   subject: '${song.title} - ${song.artist}',
                 );
               }
